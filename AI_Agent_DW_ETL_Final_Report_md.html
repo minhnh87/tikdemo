@@ -1273,10 +1273,15 @@ header h1 {
         cursor: pointer;
         z-index: 100;
       }
+
+      .outline-header .close-sidebar {
+        display: flex !important;
+      }
     }
 
     @media (min-width: 1025px) {
-      .toggle-outline {
+      .toggle-outline,
+      .outline-header .close-sidebar {
         display: none !important;
       }
     }
@@ -2854,6 +2859,7 @@ Large Scale (200+ jobs):
       <aside class="outline-sidebar">
         <div class="outline-header">
           <h3>Outline</h3>
+          <button id="close-outline" class="close-sidebar">✕</button>
         </div>
         <nav id="outline" class="outline">
 <ul class="outline-list">
@@ -3176,12 +3182,28 @@ Large Scale (200+ jobs):
       // Mobile toggle
       const toggleBtn = document.getElementById('toggle-outline');
       const outlineSidebar = document.querySelector('.outline-sidebar');
+      const closeBtn = document.getElementById('close-outline');
 
       if (toggleBtn && outlineSidebar) {
         toggleBtn.addEventListener('click', function() {
-          outlineSidebar.classList.toggle('open');
+          outlineSidebar.classList.add('open');
         });
       }
+
+      if (closeBtn && outlineSidebar) {
+        closeBtn.addEventListener('click', function() {
+          outlineSidebar.classList.remove('open');
+        });
+      }
+
+      // Close outline when clicking a link on mobile
+      links.forEach(link => {
+        link.addEventListener('click', function() {
+          if (window.innerWidth <= 1024 && outlineSidebar) {
+            outlineSidebar.classList.remove('open');
+          }
+        });
+      });
     });
   
   </script>
