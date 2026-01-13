@@ -1,0 +1,3189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Agent-DW-ETL-Final-Report.md</title>
+  <style>
+/* ========================================
+   MINIMALIST DOCUMENT READER
+   GitHub-style typography
+   ======================================== */
+
+:root {
+  /* Pure White Theme */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-tertiary: #f6f8fa;
+  --bg-hover: #eaeef2;
+
+  /* Text Colors - GitHub style */
+  --text-primary: #000;
+  --text-secondary: #333;
+  --text-tertiary: #666;
+
+  /* Accent - GitHub blue */
+  --accent-primary: #0969da;
+  --accent-hover: #0550ae;
+  --accent-light: #ddf4ff;
+
+  /* Borders - GitHub style */
+  --border-primary: #d1d9e0;
+  --border-secondary: #d8dee4;
+
+  /* Typography - GitHub style (system fonts) */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Spacing */
+  --header-height: 0px;
+  --sidebar-width: 330px;
+}
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header - Hidden */
+.viewer-header {
+  display: none;
+}
+
+/* ========================================
+   LAYOUT - 3 COLUMNS
+   ======================================== */
+
+.viewer-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr var(--sidebar-width);
+  height: 100vh;
+}
+
+/* ========================================
+   LEFT SIDEBAR - FILE TREE
+   ======================================== */
+
+.file-tree-sidebar {
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-primary);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.file-tree-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border-secondary);
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 10;
+}
+
+.file-tree-header h3 {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.logo-link {
+  display: flex;
+  transition: transform 0.15s ease;
+}
+
+.logo-link:hover {
+  transform: scale(1.1);
+}
+
+.close-sidebar {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s ease;
+}
+
+.close-sidebar:hover {
+  color: var(--text-primary);
+}
+
+.file-tree {
+  padding: 8px 0;
+}
+
+.loading-tree {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+/* Tree Folder */
+.tree-folder {
+  margin-bottom: 2px;
+}
+
+.tree-folder-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s ease;
+}
+
+.tree-folder-header:hover {
+  background: var(--bg-tertiary);
+}
+
+.tree-icon {
+  flex-shrink: 0;
+  fill: var(--text-tertiary);
+  transition: all 0.15s ease;
+}
+
+.chevron-icon {
+  transform: rotate(-90deg);
+  transition: transform 0.15s ease;
+}
+
+.tree-folder.expanded .chevron-icon {
+  transform: rotate(0deg);
+}
+
+.tree-folder-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.tree-folder-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+}
+
+.tree-folder.expanded .tree-folder-content {
+  max-height: 2000px;
+}
+
+/* Tree File */
+.tree-file {
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: all 0.1s ease;
+}
+
+.tree-file-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 40px 8px 44px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tree-file:hover {
+  background: var(--bg-tertiary);
+}
+
+.tree-file:hover .tree-file-link {
+  color: var(--text-primary);
+}
+
+.tree-file.active {
+  background: var(--bg-tertiary);
+}
+
+.tree-file.active .tree-file-link {
+  color: blue;
+  font-weight: 500;
+}
+
+.tree-file-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ========================================
+   MAIN CONTENT - Reading Optimized
+   ======================================== */
+
+.viewer-content {
+  background: var(--bg-primary);
+  overflow-y: auto;
+  padding: 20px 20px 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.loading {
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+
+/* Markdown Styles - GitHub-style */
+.markdown-body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  word-wrap: break-word;
+}
+
+.markdown-body > *:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text-primary);
+  scroll-margin-top: 16px;
+}
+.markdown-body h1 {
+  color: darkblue!important;
+}
+.markdown-body h2 {
+  color: darkgreen!important;
+}
+.markdown-body h3 {
+  color: darkorchid!important;
+}
+.markdown-body h4 {
+  color: darkred!important;
+}
+.markdown-body h5 {
+  color: darkcyan!important;
+}
+.markdown-body h6 {
+  color: darkgoldenrod!important;
+}
+.markdown-body strong {
+  color: #1055C9
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  font-weight: 600;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.markdown-body h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.markdown-body h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+}
+
+.markdown-body h4 {
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.markdown-body h5 {
+  font-size: 0.875em;
+  font-weight: 600;
+}
+
+.markdown-body h6 {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.markdown-body p {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-left: 2em;
+}
+
+.markdown-body li {
+  margin-top: 0.25em;
+}
+
+.markdown-body li + li {
+  margin-top: 0.25em;
+}
+
+.markdown-body li > ul,
+.markdown-body li > ol {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background: rgba(175, 184, 193, 0.2);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+}
+
+.markdown-body pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  /* background: var(--bg-tertiary); */
+  background: #ECFAE5;
+  color: #332D56;
+  border-radius: 6px;
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.markdown-body pre code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  background: transparent;
+  border-radius: 0;
+  word-break: normal;
+  white-space: pre;
+}
+
+.markdown-body blockquote {
+  margin: 0 0 16px 0;
+  padding: 0 1em;
+  color: var(--text-secondary);
+  border-left: 0.25em solid var(--border-primary);
+}
+
+.markdown-body blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body th,
+.markdown-body td {
+  padding: 6px 13px;
+  border: 1px solid var(--border-primary);
+}
+
+.markdown-body th {
+  font-weight: 600;
+}
+
+.markdown-body tr {
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-secondary);
+}
+
+.markdown-body tr:nth-child(2n) {
+  background: var(--bg-tertiary);
+}
+
+.markdown-body a {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  box-sizing: content-box;
+  background: var(--bg-primary);
+}
+
+.markdown-body hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background: var(--border-secondary);
+  border: 0;
+}
+
+.markdown-body strong {
+  font-weight: 600;
+}
+
+.markdown-body em {
+  font-style: italic;
+}
+
+/* ========================================
+   RIGHT SIDEBAR - OUTLINE
+   ======================================== */
+
+.outline-sidebar {
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border-primary);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.outline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border-secondary);
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 10;
+}
+
+.outline-header h3 {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+}
+
+.outline {
+  padding: 12px 0;
+}
+
+.no-outline {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+.outline-list {
+  list-style: none;
+}
+
+.outline-item {
+  margin: 1px 0;
+}
+
+.outline-link {
+  display: block;
+  padding: 6px 20px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 1.4;
+  transition: all 0.1s ease;
+}
+
+.outline-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.outline-link.active {
+  color: blue;
+  font-weight: 500;
+}
+
+/* Outline Levels */
+.outline-level-1 .outline-link {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.outline-level-2 .outline-link {
+  padding-left: 32px;
+}
+
+.outline-level-3 .outline-link {
+  padding-left: 44px;
+  font-size: 12px;
+}
+
+.outline-level-4 .outline-link {
+  padding-left: 56px;
+  font-size: 12px;
+}
+
+.outline-level-5 .outline-link,
+.outline-level-6 .outline-link {
+  padding-left: 68px;
+  font-size: 12px;
+}
+
+/* ========================================
+   MOBILE TOGGLE BUTTONS
+   ======================================== */
+
+.toggle-file-tree,
+.toggle-outline {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  padding: 10px 16px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.15s ease;
+}
+
+.toggle-file-tree {
+  left: 20px;
+}
+
+.toggle-outline {
+  right: 20px;
+}
+
+.toggle-file-tree:hover,
+.toggle-outline:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* ========================================
+   SCROLLBAR - Minimal
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-light);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 1200px) {
+  .viewer-layout {
+    grid-template-columns: 220px 1fr 220px;
+  }
+
+  :root {
+    --sidebar-width: 220px;
+  }
+
+  .viewer-content {
+    padding: 20px 20px 40px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .viewer-header {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .viewer-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .file-tree-sidebar,
+  .outline-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .file-tree-sidebar {
+    left: 0;
+  }
+
+  .outline-sidebar {
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  .file-tree-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .outline-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .close-sidebar {
+    display: block;
+  }
+
+  .toggle-file-tree,
+  .toggle-outline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .viewer-content {
+    padding: 20px 20px 40px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .file-tree-sidebar,
+  .outline-sidebar {
+    width: 260px;
+  }
+
+  .markdown-body {
+    font-size: 14px;
+  }
+
+  .markdown-body h1 {
+    font-size: 1.75em;
+  }
+
+  .markdown-body h2 {
+    font-size: 1.375em;
+  }
+
+  .markdown-body h3 {
+    font-size: 1.125em;
+  }
+}
+
+/* ========================================
+   HOME PAGE STYLES
+   ======================================== */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+header {
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.folder-section {
+  margin-bottom: 40px;
+  animation: fadeIn 0.3s ease;
+}
+
+.folder-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.file-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+
+.file-card:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-light);
+}
+
+.file-icon {
+  font-size: 28px;
+  opacity: 0.6;
+}
+
+.file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-path {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-files {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-tertiary);
+  font-size: 15px;
+}
+
+/* ========================================
+   ACTION BUTTONS in File Tree - Hover to reveal
+   (Styles moved to end of file under "HEADER ACTIONS")
+   ======================================== */
+
+/* Position context for action buttons */
+.tree-folder-header {
+  position: relative;
+}
+
+/* ========================================
+   CONFIRM DIALOG
+   ======================================== */
+
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.confirm-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.confirm-dialog {
+  background: var(--bg-primary);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+  transform: scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+.confirm-overlay.show .confirm-dialog {
+  transform: scale(1);
+}
+
+.confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 20px 0;
+}
+
+.confirm-header svg {
+  width: 24px;
+  height: 24px;
+  fill: #cf222e;
+  flex-shrink: 0;
+}
+
+.confirm-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.confirm-body {
+  padding: 12px 20px 20px;
+}
+
+.confirm-body p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.confirm-body .item-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+  border-radius: 0 0 8px 8px;
+}
+
+.confirm-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.confirm-btn-cancel {
+  background: var(--bg-primary);
+  border-color: var(--border-primary);
+  color: var(--text-secondary);
+}
+
+.confirm-btn-cancel:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.confirm-btn-delete {
+  background: #cf222e;
+  color: white;
+}
+
+.confirm-btn-delete:hover {
+  background: #a40e26;
+}
+
+/* ========================================
+   INPUT DIALOG
+   ======================================== */
+
+.input-dialog-field {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input-dialog-field:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1);
+}
+
+.confirm-btn-ok {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.confirm-btn-ok:hover {
+  background: var(--accent-hover);
+}
+
+/* ========================================
+   MOVE DIALOG
+   ======================================== */
+
+.move-dialog .confirm-body {
+  padding: 12px 20px 16px;
+}
+
+.folder-list {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid var(--border-secondary);
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+.folder-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.folder-option:last-child {
+  border-bottom: none;
+}
+
+.folder-option:hover {
+  background: var(--bg-tertiary);
+}
+
+.folder-option svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--text-tertiary);
+}
+
+.folder-option span {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.no-folders {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+/* ========================================
+   HEADER ACTIONS (Create folder button)
+   ======================================== */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-hover);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.action-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--text-tertiary);
+  transition: fill 0.15s ease;
+}
+
+.action-btn:hover {
+  background: var(--bg-hover);
+}
+
+.action-btn:hover svg {
+  fill: var(--text-primary);
+}
+
+/* File tree action buttons */
+.tree-folder-header .action-btn,
+.tree-file .action-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 5;
+}
+
+.tree-folder-header:hover .action-btn,
+.tree-file:hover .action-btn {
+  opacity: 1;
+}
+
+/* Position action buttons */
+.tree-folder-header .rename-btn {
+  right: 40px;
+}
+
+.tree-folder-header .delete-btn {
+  right: 12px;
+}
+
+.tree-file .rename-btn {
+  right: 68px;
+}
+
+.tree-file .move-btn {
+  right: 40px;
+}
+
+.tree-file .delete-btn {
+  right: 12px;
+}
+
+/* Delete button special color */
+.action-btn.delete-btn svg {
+  fill: #cf222e;
+}
+
+.action-btn.delete-btn:hover {
+  background: rgba(207, 34, 46, 0.15);
+}
+
+.action-btn.delete-btn:hover svg {
+  fill: #cf222e;
+}
+
+/* ========================================
+   EXTERNAL FOLDERS
+   ======================================== */
+
+.external-folder {
+  border-bottom: 1px dashed var(--border-secondary);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+}
+
+.external-folder-header {
+  background: linear-gradient(90deg, rgba(9, 105, 218, 0.05) 0%, transparent 100%);
+}
+
+.external-folder-header .folder-icon {
+  fill: var(--accent-primary);
+}
+
+.external-folder-header .tree-folder-name {
+  color: var(--accent-primary);
+  font-size: 12px;
+}
+
+.external-folder-header .remove-external-btn {
+  right: 12px;
+}
+
+.remove-external-btn svg {
+  fill: var(--text-tertiary);
+}
+
+.remove-external-btn:hover svg {
+  fill: #cf222e;
+}
+
+/* ========================================
+   ADD FOLDER DIALOG
+   ======================================== */
+
+.add-folder-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* ========================================
+   QUICK BUTTONS
+   ======================================== */
+
+.quick-btn {
+  background: var(--accent-light);
+  border: 1px solid var(--accent-primary);
+}
+
+.quick-btn svg {
+  fill: var(--accent-primary);
+}
+
+.quick-btn:hover {
+  background: var(--accent-primary);
+}
+
+.quick-btn:hover svg {
+  fill: white;
+}
+
+
+
+
+    /* Override for 2-column layout (no file tree) */
+    .file-tree-sidebar,
+    .toggle-file-tree,
+    .close-sidebar {
+      display: none !important;
+    }
+
+    .viewer-layout {
+      grid-template-columns: 1fr var(--sidebar-width) !important;
+    }
+
+    .viewer-header {
+      display: flex !important;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border-primary);
+      background: var(--bg-primary);
+    }
+
+    .header-left, .header-right {
+      display: none;
+    }
+
+    .header-center {
+      flex: 1;
+    }
+
+    .file-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .viewer-layout {
+        grid-template-columns: 1fr !important;
+      }
+
+      .outline-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 280px !important;
+        transform: translateX(100%) !important;
+        transition: transform 0.2s ease !important;
+        z-index: 200 !important;
+      }
+
+      .outline-sidebar.open {
+        transform: translateX(0) !important;
+      }
+
+      .toggle-outline {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        z-index: 100;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .toggle-outline {
+        display: none !important;
+      }
+    }
+  
+  </style>
+</head>
+<body>
+  <div class="viewer-container">
+    <header class="viewer-header">
+      <div class="header-left"></div>
+      <div class="header-center">
+        <h1 class="file-title">AI-Agent-DW-ETL-Final-Report.md</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <div class="viewer-layout">
+      <!-- Main Content -->
+      <main class="viewer-content">
+        <div class="markdown-body">
+<h1 id="heading-0">BÁO CÁO TỔNG HỢP</h1>
+<h1 id="heading-1">Triển khai AI Agent cho Quản lý Data Warehouse và ETL Jobs</h1>
+<hr>
+<h2 id="heading-2">Mục lục</h2>
+<ol>
+<li><a href="#1-v%C3%AC-sao-c%E1%BA%A7n-tri%E1%BB%83n-khai-ai-agent">Vì sao cần triển khai AI Agent</a></li>
+<li><a href="#2-c%C3%A1c-k%E1%BB%8Bch-b%E1%BA%A3n-ai-agent-c%C3%B3-th%E1%BB%83-x%E1%BB%AD-l%C3%BD">Các kịch bản AI Agent có thể xử lý</a></li>
+<li><a href="#3-so-s%C3%A1nh-model-v%C3%A0-%C4%91%E1%BB%81-xu%E1%BA%A5t-theo-quy-m%C3%B4">So sánh Model và Đề xuất theo Quy mô</a></li>
+<li><a href="#4-k%E1%BA%BF-ho%E1%BA%A1ch-tri%E1%BB%83n-khai">Kế hoạch Triển khai</a></li>
+<li><a href="#5-best-practices">Best Practices</a></li>
+<li><a href="#6-b%E1%BA%A3o-m%E1%BA%ADt">Bảo mật</a></li>
+<li><a href="#7-nh%E1%BB%AFng-%C4%91i%E1%BB%81u-c%E1%BA%A7n-%C4%91%E1%BA%B7c-bi%E1%BB%87t-l%C6%B0u-%C3%BD">Những điều cần đặc biệt lưu ý</a></li>
+<li><a href="#8-summary">Summary</a></li>
+</ol>
+<hr>
+<h2 id="heading-3">1. Vì sao cần triển khai AI Agent</h2>
+<h3 id="heading-4">1.1 Thực trạng hiện tại</h3>
+<p><strong>Vấn đề của Data Engineer hàng ngày:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Thời gian</th>
+<th>Công việc thủ công</th>
+<th>Tính chất</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>06:00-07:00</td>
+<td>Check ETL jobs chạy đêm</td>
+<td>Lặp lại, nhàm chán</td>
+</tr>
+<tr>
+<td>07:00-08:00</td>
+<td>Đọc logs, tìm nguyên nhân lỗi</td>
+<td>Tốn thời gian</td>
+</tr>
+<tr>
+<td>08:00-09:00</td>
+<td>Fix lỗi, retry jobs</td>
+<td>Reactive</td>
+</tr>
+<tr>
+<td>Bất kỳ lúc nào</td>
+<td>Xử lý alert đột xuất</td>
+<td>Gián đoạn công việc</td>
+</tr>
+</tbody></table>
+<p><strong>Thống kê điển hình:</strong></p>
+<ul>
+<li><strong>2-4 giờ/ngày</strong> dành cho monitoring và troubleshooting routine</li>
+<li><strong>70% lỗi ETL</strong> là các pattern lặp lại (timeout, schema change, resource)</li>
+<li><strong>MTTR trung bình</strong>: 30-60 phút (từ lúc phát hiện đến fix xong)</li>
+<li><strong>Thời gian phản hồi</strong>: Có thể chậm trễ hàng giờ nếu xảy ra ngoài giờ làm việc</li>
+</ul>
+<h3 id="heading-5">1.2 AI Agent giải quyết được gì</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    TRƯỚC vs SAU KHI CÓ AI AGENT                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  TRƯỚC (Manual)              SAU (AI Agent)                     │
+│  ──────────────              ─────────────────                  │
+│  Check jobs: 30 phút/ngày    Check jobs: Tự động 24/7           │
+│  Phát hiện lỗi: 10-60 phút   Phát hiện lỗi: &lt; 1 phút            │
+│  Phân tích log: 15-30 phút   Phân tích log: &lt; 30 giây           │
+│  Retry thủ công: 5-10 phút   Retry tự động: Tức thì             │
+│  Báo cáo: Tự viết            Báo cáo: Tự động generate          │
+│                                                                  │
+│  Tổng: 2-4 giờ/ngày          Tổng: 15-30 phút/ngày              │
+│        (routine work)               (chỉ xử lý edge cases)      │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-6">1.3 Lợi ích cụ thể</h3>
+<table>
+<thead>
+<tr>
+<th>Lợi ích</th>
+<th>Mô tả</th>
+<th>Đo lường</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Tiết kiệm thời gian</strong></td>
+<td>Giảm 80% thời gian routine</td>
+<td>2-3 giờ/ngày</td>
+</tr>
+<tr>
+<td><strong>Phản hồi nhanh</strong></td>
+<td>Phát hiện và xử lý tức thì</td>
+<td>MTTR giảm 70%</td>
+</tr>
+<tr>
+<td><strong>Hoạt động 24/7</strong></td>
+<td>Không cần on-call cho issues thông thường</td>
+<td>Coverage 100%</td>
+</tr>
+<tr>
+<td><strong>Giảm human error</strong></td>
+<td>Consistent, không mệt mỏi</td>
+<td>Fewer incidents</td>
+</tr>
+<tr>
+<td><strong>Học từ patterns</strong></td>
+<td>Càng chạy càng thông minh</td>
+<td>Continuous improvement</td>
+</tr>
+<tr>
+<td><strong>Data-driven insights</strong></td>
+<td>Phân tích trends, đề xuất tối ưu</td>
+<td>Proactive optimization</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="heading-7">2. Các kịch bản AI Agent có thể xử lý</h2>
+<h3 id="heading-8">2.1 Tổng quan kịch bản</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                 AI AGENT CAPABILITY MATRIX                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ✅ TỰ ĐỘNG HOÀN TOÀN        ⚠️ CẦN HUMAN APPROVE              │
+│  ────────────────────        ─────────────────────              │
+│  • Check job status          • Schema changes lớn               │
+│  • Parse error logs          • Delete/modify data               │
+│  • Retry failed jobs         • Change pipeline logic            │
+│  • Send alerts               • Cost &gt; threshold                 │
+│  • Generate reports          • Security-related                 │
+│  • Simple data fixes         • First-time issues                │
+│                                                                  │
+│  ❌ KHÔNG THỂ LÀM                                                │
+│  ─────────────────                                               │
+│  • Design pipeline mới                                           │
+│  • Business logic decisions                                      │
+│  • Strategic planning                                            │
+│  • Stakeholder communication                                     │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-9">2.2 Chi tiết từng kịch bản</h3>
+<h4 id="heading-10">Kịch bản 1: Job Monitoring &amp; Alerting</h4>
+<p><strong>Mô tả</strong>: Agent liên tục check status của tất cả ETL jobs</p>
+<pre><code>Trigger: Scheduled (mỗi 5 phút) hoặc Event-driven
+
+Flow:
+1. Agent query Airflow/Dagster API lấy job status
+2. Phát hiện job failed/delayed
+3. Phân loại severity (Critical/Warning/Info)
+4. Gửi alert qua Slack/Email với context
+5. Log vào monitoring system
+
+Output mẫu (Slack):
+┌─────────────────────────────────────────────────┐
+│ 🔴 ETL Job Failed: sales_daily_load            │
+│                                                 │
+│ Status: FAILED                                  │
+│ Time: 2026-01-13 06:15:32                       │
+│ Duration: 45 minutes (expected: 30 min)         │
+│ Error: Connection timeout to source DB          │
+│                                                 │
+│ Suggested Action: Auto-retry initiated          │
+│ [View Logs] [View DAG] [Acknowledge]            │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<h4 id="heading-11">Kịch bản 2: Intelligent Error Analysis</h4>
+<p><strong>Mô tả</strong>: Agent đọc error logs và xác định root cause</p>
+<pre><code>Trigger: Khi job failed
+
+Flow:
+1. Agent fetch error logs từ job
+2. Parse và phân tích log content
+3. Match với known error patterns
+4. Xác định root cause
+5. Suggest remediation actions
+6. Nếu confident &gt; 80%: Auto-execute fix
+
+Ví dụ phân tích:
+┌─────────────────────────────────────────────────┐
+│ 🔍 Root Cause Analysis                          │
+│                                                 │
+│ Error Type: Database Connection Failure         │
+│ Root Cause: Source DB maintenance window        │
+│ Confidence: 95%                                 │
+│                                                 │
+│ Evidence:                                       │
+│ • Error: "Connection refused to 10.0.1.50:5432" │
+│ • Time matches scheduled maintenance (6-7 AM)  │
+│ • Same error pattern last Tuesday              │
+│                                                 │
+│ Action Taken: Scheduled retry at 07:15          │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<h4 id="heading-12">Kịch bản 3: Auto-Retry với Smart Logic</h4>
+<p><strong>Mô tả</strong>: Tự động retry jobs với chiến lược thông minh</p>
+<pre><code>Trigger: Job failed với retryable error
+
+Logic:
+┌─────────────────────────────────────────────────┐
+│              RETRY DECISION TREE                 │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│  Error Type?                                     │
+│  ├── Transient (timeout, connection)            │
+│  │   └── Retry với exponential backoff          │
+│  │       (1 min → 5 min → 15 min → escalate)   │
+│  │                                              │
+│  ├── Resource (memory, disk)                    │
+│  │   └── Retry với increased resources          │
+│  │       (nếu có quyền scale)                  │
+│  │                                              │
+│  ├── Data (schema, format)                      │
+│  │   └── Alert + wait for human                 │
+│  │                                              │
+│  └── Unknown                                    │
+│      └── Retry 1 lần → escalate nếu fail       │
+│                                                  │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<h4 id="heading-13">Kịch bản 4: Schema Change Detection</h4>
+<p><strong>Mô tả</strong>: Phát hiện và adapt với schema changes</p>
+<pre><code>Trigger: Schema validation failed hoặc scheduled scan
+
+Flow:
+1. Compare current schema với expected schema
+2. Classify change type:
+   - Additive (new column): Auto-adapt
+   - Rename: Suggest mapping
+   - Type change: Alert + analyze impact
+   - Delete: Alert + block pipeline
+3. Execute appropriate action
+4. Update schema registry
+
+Output:
+┌─────────────────────────────────────────────────┐
+│ 📋 Schema Change Detected                        │
+│                                                 │
+│ Table: customers                                │
+│ Source: CRM Database                            │
+│                                                 │
+│ Changes:                                        │
+│ ✅ ADD: loyalty_tier (VARCHAR) - Auto-adapted   │
+│ ⚠️ RENAME: email → email_address - Need mapping │
+│ ❌ DELETE: legacy_id - Pipeline blocked         │
+│                                                 │
+│ Action Required: Review column mapping          │
+│ [Approve Mapping] [Reject] [View Details]       │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<h4 id="heading-14">Kịch bản 5: Data Quality Monitoring</h4>
+<p><strong>Mô tả</strong>: Phát hiện anomalies trong data</p>
+<pre><code>Trigger: After job completion hoặc scheduled
+
+Checks:
+• Row count deviation &gt; 3 standard deviations
+• Null percentage spike
+• Duplicate rate increase
+• Value distribution shift
+• Freshness (data age)
+
+Output:
+┌─────────────────────────────────────────────────┐
+│ 📊 Data Quality Alert                            │
+│                                                 │
+│ Table: orders                                   │
+│ Check Time: 2026-01-13 08:00                    │
+│                                                 │
+│ Anomalies Detected:                             │
+│ ⚠️ Row count: 45,000 (expected: 52,000 ± 5,000) │
+│ ⚠️ Null rate in 'shipping_date': 15% (usual: 2%)│
+│ ✅ Duplicates: 0.01% (within threshold)         │
+│                                                 │
+│ Possible Causes:                                │
+│ • Weekend data (lower volume expected)          │
+│ • Source system issue with shipping module      │
+│                                                 │
+│ [Investigate] [Acknowledge] [Ignore]            │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<h4 id="heading-15">Kịch bản 6: Natural Language Interface</h4>
+<p><strong>Mô tả</strong>: Chat với Data Warehouse bằng ngôn ngữ tự nhiên</p>
+<pre><code>User: "Hôm nay có job nào fail không?"
+
+Agent: "Có 2 jobs failed sáng nay:
+1. sales_daily_load (06:15) - Connection timeout, đã auto-retry thành công
+2. inventory_sync (07:30) - Schema mismatch, đang chờ approval
+
+Bạn muốn tôi show details của job nào?"
+
+User: "Show details job inventory_sync"
+
+Agent: "Job: inventory_sync
+- Error: Column 'warehouse_code' type changed from INT to VARCHAR
+- Impact: 3 downstream jobs đang chờ
+- Suggested fix: Update transform để cast type
+- Approval needed để apply fix. Approve?"
+</code></pre>
+<h4 id="heading-16">Kịch bản 7: Cost Monitoring &amp; Optimization</h4>
+<p><strong>Mô tả</strong>: Theo dõi và tối ưu chi phí compute/storage</p>
+<pre><code>Trigger: Daily analysis hoặc khi cost spike
+
+Capabilities:
+• Track compute cost per job
+• Identify inefficient queries
+• Suggest optimization opportunities
+• Alert khi cost vượt budget
+
+Output:
+┌─────────────────────────────────────────────────┐
+│ 💰 Daily Cost Report                             │
+│                                                 │
+│ Total: $127.45 (Budget: $150/day)               │
+│                                                 │
+│ Top 5 Expensive Jobs:                           │
+│ 1. customer_360_rebuild: $45.20 (35%)           │
+│ 2. ml_feature_pipeline: $28.10 (22%)            │
+│ 3. historical_backfill: $18.50 (15%)            │
+│                                                 │
+│ Optimization Suggestions:                       │
+│ • customer_360: Consider incremental instead    │
+│   of full rebuild (potential save: $30/day)    │
+│ • ml_feature: Reduce partition scan scope       │
+│                                                 │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<h4 id="heading-17">Kịch bản 8: Automated Reporting</h4>
+<p><strong>Mô tả</strong>: Tự động generate reports cho stakeholders</p>
+<pre><code>Trigger: Scheduled (daily/weekly)
+
+Report Types:
+• Daily ETL Health Summary
+• Weekly Pipeline Performance
+• Monthly Data Quality Scorecard
+• Incident Post-mortem Reports
+
+Sample Daily Report:
+┌─────────────────────────────────────────────────┐
+│ 📈 ETL Daily Health Report - 2026-01-13         │
+│                                                 │
+│ Overall Status: 🟢 Healthy                      │
+│                                                 │
+│ Summary:                                        │
+│ • Jobs Run: 156                                 │
+│ • Success Rate: 98.7% (154/156)                 │
+│ • Auto-Resolved: 2 jobs                         │
+│ • Manual Intervention: 0                        │
+│ • Avg Duration: 12.5 min (target: 15 min)       │
+│                                                 │
+│ Incidents:                                      │
+│ • 06:15 - sales_daily_load timeout (resolved)   │
+│ • 07:30 - inventory_sync schema (resolved)      │
+│                                                 │
+│ Data Quality: 99.2% (target: 98%)               │
+│ Cost: $127.45 (budget: $150)                    │
+│                                                 │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-18">2.3 Tổng hợp khả năng xử lý</h3>
+<table>
+<thead>
+<tr>
+<th>Kịch bản</th>
+<th>Tự động</th>
+<th>Cần Approve</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Job Monitoring</td>
+<td>100%</td>
+<td>-</td>
+<td>Liên tục</td>
+</tr>
+<tr>
+<td>Error Analysis</td>
+<td>90%</td>
+<td>10% (unknown errors)</td>
+<td>Per failure</td>
+</tr>
+<tr>
+<td>Auto-Retry</td>
+<td>80%</td>
+<td>20% (risky retries)</td>
+<td>Per failure</td>
+</tr>
+<tr>
+<td>Schema Detection</td>
+<td>50%</td>
+<td>50%</td>
+<td>Per change</td>
+</tr>
+<tr>
+<td>Data Quality</td>
+<td>70%</td>
+<td>30% (critical)</td>
+<td>Per job</td>
+</tr>
+<tr>
+<td>NL Interface</td>
+<td>100%</td>
+<td>-</td>
+<td>On-demand</td>
+</tr>
+<tr>
+<td>Cost Monitoring</td>
+<td>90%</td>
+<td>10% (actions)</td>
+<td>Daily</td>
+</tr>
+<tr>
+<td>Reporting</td>
+<td>100%</td>
+<td>-</td>
+<td>Scheduled</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="heading-19">3. So sánh Model và Đề xuất theo Quy mô</h2>
+<h3 id="heading-20">3.1 Tổng quan lựa chọn</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    CÁC LỰA CHỌN MODEL                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  FREE API                    SELF-HOST                PAID API  │
+│  ────────                    ─────────                ────────  │
+│  • Groq (Llama 70B)         • Ollama + Qwen          • OpenAI   │
+│  • Google Gemini            • vLLM + Llama           • Claude   │
+│  • Cloudflare Workers       • LocalAI                • Azure    │
+│                                                                  │
+│  Chi phí: $0                Chi phí: $20-500         Chi phí:   │
+│  Limit: Rate limited        Limit: Hardware          $100-2000  │
+│  Data: Gửi ra ngoài         Data: Trong nhà          /tháng     │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-21">3.2 Chi tiết từng option</h3>
+<h4 id="heading-22">A. FREE API Options</h4>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Model</th>
+<th>Giới hạn</th>
+<th>Chất lượng</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Groq</strong></td>
+<td>Llama 3.3 70B</td>
+<td>30 req/min</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>Production nhỏ</td>
+</tr>
+<tr>
+<td><strong>Groq</strong></td>
+<td>Llama 3.1 8B</td>
+<td>30 req/min</td>
+<td>⭐⭐⭐</td>
+<td>Simple tasks</td>
+</tr>
+<tr>
+<td><strong>Google</strong></td>
+<td>Gemini 1.5 Flash</td>
+<td>15 req/min</td>
+<td>⭐⭐⭐⭐</td>
+<td>Long context</td>
+</tr>
+<tr>
+<td><strong>Google</strong></td>
+<td>Gemini 2.0 Flash</td>
+<td>10 req/min</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>Complex reasoning</td>
+</tr>
+<tr>
+<td><strong>Cloudflare</strong></td>
+<td>Llama 3.1 8B</td>
+<td>10K tokens/day</td>
+<td>⭐⭐⭐</td>
+<td>Prototype</td>
+</tr>
+</tbody></table>
+<h4 id="heading-23">B. SELF-HOST Options</h4>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Kích thước</th>
+<th>VRAM cần</th>
+<th>Chất lượng</th>
+<th>Chi phí HW</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Qwen 2.5 7B</strong></td>
+<td>4.4 GB</td>
+<td>8 GB</td>
+<td>⭐⭐⭐⭐</td>
+<td>$300-400</td>
+</tr>
+<tr>
+<td><strong>Llama 3.1 8B</strong></td>
+<td>4.7 GB</td>
+<td>8 GB</td>
+<td>⭐⭐⭐</td>
+<td>$300-400</td>
+</tr>
+<tr>
+<td><strong>Phi-4</strong></td>
+<td>8 GB</td>
+<td>12 GB</td>
+<td>⭐⭐⭐⭐</td>
+<td>$400-500</td>
+</tr>
+<tr>
+<td><strong>Qwen 2.5 32B</strong></td>
+<td>19 GB</td>
+<td>24 GB</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>$1,500-2,000</td>
+</tr>
+<tr>
+<td><strong>Llama 3.3 70B</strong></td>
+<td>40 GB</td>
+<td>48 GB+</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>$3,000-4,000</td>
+</tr>
+</tbody></table>
+<h4 id="heading-24">C. PAID API Options (tham khảo)</h4>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Model</th>
+<th>Chi phí ước tính</th>
+<th>Chất lượng</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>OpenAI</strong></td>
+<td>GPT-4o mini</td>
+<td>$50-200/tháng</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>OpenAI</strong></td>
+<td>GPT-4o</td>
+<td>$200-800/tháng</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>Anthropic</strong></td>
+<td>Claude 3.5 Sonnet</td>
+<td>$150-500/tháng</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>Anthropic</strong></td>
+<td>Claude 3.5 Haiku</td>
+<td>$50-150/tháng</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+</tbody></table>
+<h3 id="heading-25">3.3 Đề xuất theo QUY MÔ</h3>
+<h4 id="heading-26">Quy mô NHỎ (&lt; 50 jobs/ngày)</h4>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│  QUY MÔ NHỎ                                                      │
+│  • Jobs: &lt; 50/ngày                                               │
+│  • Team: 1-2 Data Engineers                                      │
+│  • LLM calls: ~100-500/ngày                                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ★ KHUYẾN NGHỊ: Groq Free API                                   │
+│                                                                  │
+│  Lý do:                                                          │
+│  • $0/tháng - không tốn chi phí                                 │
+│  • Llama 3.3 70B chất lượng cao                                 │
+│  • 30 req/min = 43,200 req/ngày (dư sức)                        │
+│  • Setup trong 10 phút                                          │
+│                                                                  │
+│  Backup: Google Gemini Free                                      │
+│                                                                  │
+│  Chi phí tổng: $0/tháng                                         │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h4 id="heading-27">Quy mô TRUNG BÌNH (50-200 jobs/ngày)</h4>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│  QUY MÔ TRUNG BÌNH                                               │
+│  • Jobs: 50-200/ngày                                             │
+│  • Team: 2-5 Data Engineers                                      │
+│  • LLM calls: ~500-2000/ngày                                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ★ KHUYẾN NGHỊ: Hybrid Approach                                 │
+│                                                                  │
+│  Setup:                                                          │
+│  • Primary: Self-host Qwen 2.5 7B (simple tasks - 80%)          │
+│  • Secondary: Groq Free (complex tasks - 20%)                   │
+│                                                                  │
+│  Hardware cần:                                                   │
+│  • GPU: RTX 3060 12GB hoặc tương đương                          │
+│  • RAM: 32GB                                                    │
+│  • Hoặc Cloud VM với GPU: $100-150/tháng                        │
+│                                                                  │
+│  Chi phí tổng: $50-150/tháng                                    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h4 id="heading-28">Quy mô LỚN (200+ jobs/ngày)</h4>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│  QUY MÔ LỚN                                                      │
+│  • Jobs: 200+/ngày                                               │
+│  • Team: 5+ Data Engineers                                       │
+│  • LLM calls: ~2000-10000/ngày                                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ★ KHUYẾN NGHỊ: Full Self-host + Paid Backup                    │
+│                                                                  │
+│  Setup:                                                          │
+│  • Primary: Self-host Qwen 2.5 32B hoặc Llama 70B               │
+│  • Backup: Paid API (GPT-4o mini) cho edge cases                │
+│                                                                  │
+│  Hardware cần:                                                   │
+│  • GPU: RTX 4090 24GB hoặc A10/A100                             │
+│  • RAM: 64GB+                                                   │
+│  • Hoặc Cloud GPU: $300-500/tháng                               │
+│                                                                  │
+│  Chi phí tổng: $200-600/tháng                                   │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-29">3.4 Decision Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Tiêu chí</th>
+<th>Nhỏ (&lt;50)</th>
+<th>Vừa (50-200)</th>
+<th>Lớn (200+)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Model chính</strong></td>
+<td>Groq Free</td>
+<td>Self-host 7B</td>
+<td>Self-host 32B/70B</td>
+</tr>
+<tr>
+<td><strong>Model backup</strong></td>
+<td>Gemini Free</td>
+<td>Groq Free</td>
+<td>Paid API</td>
+</tr>
+<tr>
+<td><strong>Chi phí/tháng</strong></td>
+<td>$0</td>
+<td>$50-150</td>
+<td>$200-600</td>
+</tr>
+<tr>
+<td><strong>Setup time</strong></td>
+<td>30 phút</td>
+<td>4-8 giờ</td>
+<td>1-2 ngày</td>
+</tr>
+<tr>
+<td><strong>Data privacy</strong></td>
+<td>❌ Gửi ra ngoài</td>
+<td>✅ Trong nhà</td>
+<td>✅ Trong nhà</td>
+</tr>
+<tr>
+<td><strong>Reliability</strong></td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+</tbody></table>
+<h3 id="heading-30">3.5 Quick Decision Guide</h3>
+<pre><code>"Tôi có &lt; 50 jobs, muốn $0"
+→ Groq Free (Llama 3.3 70B)
+
+"Tôi có 50-150 jobs, budget $100/tháng"
+→ Self-host Qwen 2.5 7B + Groq backup
+
+"Tôi có 150-300 jobs, cần quality cao"
+→ Self-host Qwen 2.5 32B trên RTX 4090
+
+"Tôi có 300+ jobs, cần production-grade"
+→ Self-host Llama 70B + Paid API backup
+
+"Data sensitive, không được gửi ra ngoài"
+→ Self-host bắt buộc (bất kể quy mô)
+
+"Muốn đơn giản nhất, chấp nhận trả tiền"
+→ OpenAI API ($100-500/tháng)
+</code></pre>
+<hr>
+<h2 id="heading-31">4. Kế hoạch Triển khai</h2>
+<h3 id="heading-32">4.1 Roadmap tổng quan</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    IMPLEMENTATION ROADMAP                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Phase 1          Phase 2          Phase 3          Phase 4     │
+│  FOUNDATION       INTELLIGENCE     AUTOMATION       OPTIMIZATION│
+│  (2-3 tuần)       (3-4 tuần)       (4-6 tuần)       (Ongoing)   │
+│                                                                  │
+│  • Setup infra    • Error analysis • Auto-retry     • ML models │
+│  • Basic monitor  • Root cause     • Self-healing   • Predictive│
+│  • Alerting       • Recommendations• NL interface   • Cost opt  │
+│                                                                  │
+│  ────────────────────────────────────────────────────────────── │
+│  Week 1-3         Week 4-7         Week 8-14        Week 15+    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-33">4.2 Phase 1: Foundation (Tuần 1-3)</h3>
+<p><strong>Mục tiêu</strong>: Setup infrastructure và basic monitoring</p>
+<p><strong>Tuần 1: Environment Setup</strong></p>
+<pre><code>Checklist:
+□ Chọn và setup LLM (Groq API hoặc Ollama)
+□ Install LangChain/CrewAI framework
+□ Kết nối với Airflow/Dagster API
+□ Setup Slack webhook cho alerts
+□ Tạo basic agent structure
+</code></pre>
+<p><strong>Tuần 2: Basic Monitoring Agent</strong></p>
+<pre><code>Checklist:
+□ Agent check job status (every 5 min)
+□ Detect failed/delayed jobs
+□ Parse basic error messages
+□ Send formatted Slack alerts
+□ Log all activities
+</code></pre>
+<p><strong>Tuần 3: Testing &amp; Refinement</strong></p>
+<pre><code>Checklist:
+□ Test với historical failures
+□ Tune alert thresholds
+□ Reduce false positives
+□ Documentation
+□ Team training
+</code></pre>
+<p><strong>Deliverables Phase 1:</strong></p>
+<ul>
+<li>Working monitoring agent</li>
+<li>Slack integration</li>
+<li>Basic alerting</li>
+<li>Runbook documentation</li>
+</ul>
+<h3 id="heading-34">4.3 Phase 2: Intelligence (Tuần 4-7)</h3>
+<p><strong>Mục tiêu</strong>: Thêm khả năng phân tích và đề xuất</p>
+<p><strong>Tuần 4-5: Error Analysis</strong></p>
+<pre><code>Checklist:
+□ Build error pattern database
+□ Implement log parsing logic
+□ Add root cause analysis
+□ Categorize error types
+□ Confidence scoring
+</code></pre>
+<p><strong>Tuần 6-7: Recommendations</strong></p>
+<pre><code>Checklist:
+□ Build remediation playbook
+□ Implement suggestion engine
+□ Add historical pattern matching
+□ Create approval workflow
+□ Track recommendation accuracy
+</code></pre>
+<p><strong>Deliverables Phase 2:</strong></p>
+<ul>
+<li>Intelligent error analysis</li>
+<li>Root cause identification</li>
+<li>Actionable recommendations</li>
+<li>Approval workflow</li>
+</ul>
+<h3 id="heading-35">4.4 Phase 3: Automation (Tuần 8-14)</h3>
+<p><strong>Mục tiêu</strong>: Tự động hóa với human oversight</p>
+<p><strong>Tuần 8-10: Auto-Retry</strong></p>
+<pre><code>Checklist:
+□ Implement retry strategies
+□ Add exponential backoff
+□ Resource-aware retries
+□ Failure escalation logic
+□ Audit trail
+</code></pre>
+<p><strong>Tuần 11-12: Self-Healing</strong></p>
+<pre><code>Checklist:
+□ Common fix implementations
+□ Schema adaptation
+□ Resource scaling triggers
+□ Rollback mechanisms
+□ Safety guardrails
+</code></pre>
+<p><strong>Tuần 13-14: Natural Language Interface</strong></p>
+<pre><code>Checklist:
+□ Chat interface (Slack bot)
+□ Query understanding
+□ Response generation
+□ Context management
+□ User feedback loop
+</code></pre>
+<p><strong>Deliverables Phase 3:</strong></p>
+<ul>
+<li>Auto-retry capability</li>
+<li>Self-healing for common issues</li>
+<li>Slack chatbot</li>
+<li>Comprehensive logging</li>
+</ul>
+<h3 id="heading-36">4.5 Phase 4: Optimization (Ongoing)</h3>
+<p><strong>Continuous Improvements:</strong></p>
+<pre><code>□ Predictive failure detection
+□ Cost optimization suggestions
+□ Performance tuning
+□ Model fine-tuning với company data
+□ Advanced analytics dashboard
+□ Multi-agent collaboration
+</code></pre>
+<h3 id="heading-37">4.6 Resource Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Duration</th>
+<th>Effort</th>
+<th>Skills Needed</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Phase 1</td>
+<td>2-3 tuần</td>
+<td>1 person</td>
+<td>Python, API integration</td>
+</tr>
+<tr>
+<td>Phase 2</td>
+<td>3-4 tuần</td>
+<td>1-2 people</td>
+<td>LLM prompting, data analysis</td>
+</tr>
+<tr>
+<td>Phase 3</td>
+<td>4-6 tuần</td>
+<td>2 people</td>
+<td>ML, system design</td>
+</tr>
+<tr>
+<td>Phase 4</td>
+<td>Ongoing</td>
+<td>Part-time</td>
+<td>MLOps, optimization</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="heading-38">5. Best Practices</h2>
+<h3 id="heading-39">5.1 Design Principles</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    DESIGN PRINCIPLES                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  1. START SIMPLE, ITERATE                                       │
+│     • MVP trước, features sau                                   │
+│     • Validate từng bước                                        │
+│     • Quick wins build trust                                    │
+│                                                                  │
+│  2. HUMAN-IN-THE-LOOP                                           │
+│     • AI đề xuất, human approve (ban đầu)                       │
+│     • Tăng autonomy dần dần                                     │
+│     • Always have override capability                           │
+│                                                                  │
+│  3. FAIL GRACEFULLY                                             │
+│     • Agent fail → fallback to traditional alerting             │
+│     • Never silent failure                                       │
+│     • Comprehensive logging                                      │
+│                                                                  │
+│  4. TRANSPARENCY                                                │
+│     • Explain all decisions                                     │
+│     • Show confidence levels                                    │
+│     • Audit trail for all actions                               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-40">5.2 Confidence-Based Decision Making</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│              CONFIDENCE vs RISK MATRIX                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│                    │ LOW RISK          │ HIGH RISK              │
+│  ──────────────────┼───────────────────┼──────────────────────  │
+│  HIGH CONFIDENCE   │ ✅ Auto-execute   │ ⚠️ Auto + notify       │
+│  (&gt; 90%)           │ (retry job)       │ (schema adapt)         │
+│  ──────────────────┼───────────────────┼──────────────────────  │
+│  MEDIUM CONFIDENCE │ ✅ Auto + notify  │ 🔔 Require approval    │
+│  (70-90%)          │ (increase memory) │ (data fix)             │
+│  ──────────────────┼───────────────────┼──────────────────────  │
+│  LOW CONFIDENCE    │ 🔔 Suggest only   │ ❌ Escalate to human   │
+│  (&lt; 70%)           │ (unknown error)   │ (production change)    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-41">5.3 Prompt Engineering Best Practices</h3>
+<pre><code class="language-python"># ❌ BAD: Vague prompt
+prompt = "Fix this ETL error"
+
+# ✅ GOOD: Structured prompt với context
+prompt = """
+Role: You are an ETL monitoring agent for a data warehouse.
+
+Context:
+- Job: {job_name}
+- Status: FAILED
+- Error: {error_message}
+- Historical: This job failed {n} times in last 30 days
+- Last success: {last_success_time}
+
+Task: Analyze the error and provide:
+1. Root cause (with confidence %)
+2. Recommended action
+3. Risk level (low/medium/high)
+
+Response format:
+{
+  "root_cause": "...",
+  "confidence": 0.85,
+  "action": "retry|escalate|fix",
+  "action_details": "...",
+  "risk_level": "low"
+}
+"""
+</code></pre>
+<h3 id="heading-42">5.4 Error Handling Patterns</h3>
+<pre><code class="language-python"># Retry với exponential backoff
+def smart_retry(job_id, max_retries=3):
+    delays = [60, 300, 900]  # 1 min, 5 min, 15 min
+
+    for attempt in range(max_retries):
+        result = retry_job(job_id)
+
+        if result.success:
+            notify(f"Job {job_id} succeeded after {attempt+1} retries")
+            return True
+
+        if not is_retryable(result.error):
+            escalate(job_id, result.error)
+            return False
+
+        if attempt &lt; max_retries - 1:
+            wait(delays[attempt])
+
+    escalate(job_id, "Max retries exceeded")
+    return False
+</code></pre>
+<h3 id="heading-43">5.5 Observability Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Purpose</th>
+<th>Alert Threshold</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Agent response time</td>
+<td>Performance</td>
+<td>&gt; 30 seconds</td>
+</tr>
+<tr>
+<td>LLM API latency</td>
+<td>Dependency health</td>
+<td>&gt; 5 seconds</td>
+</tr>
+<tr>
+<td>Decision accuracy</td>
+<td>Quality tracking</td>
+<td>&lt; 80%</td>
+</tr>
+<tr>
+<td>False positive rate</td>
+<td>Alert fatigue</td>
+<td>&gt; 10%</td>
+</tr>
+<tr>
+<td>Actions taken/day</td>
+<td>Activity monitoring</td>
+<td>Deviation &gt; 2σ</td>
+</tr>
+<tr>
+<td>Cost per decision</td>
+<td>Budget control</td>
+<td>&gt; $0.10</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="heading-44">6. Bảo mật</h2>
+<h3 id="heading-45">6.1 Security Architecture</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    SECURITY LAYERS                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Layer 1: DATA PROTECTION                                       │
+│  ─────────────────────────                                      │
+│  • Không gửi sensitive data (PII, credentials) tới LLM         │
+│  • Mask/redact trước khi gửi                                    │
+│  • Self-host nếu data sensitive                                 │
+│                                                                  │
+│  Layer 2: ACCESS CONTROL                                        │
+│  ─────────────────────────                                      │
+│  • Agent chỉ có quyền cần thiết (least privilege)              │
+│  • Separate credentials cho read vs write                       │
+│  • Audit log mọi action                                         │
+│                                                                  │
+│  Layer 3: ACTION GUARDRAILS                                     │
+│  ─────────────────────────                                      │
+│  • Whitelist allowed actions                                    │
+│  • Rate limiting                                                │
+│  • Human approval cho destructive actions                       │
+│                                                                  │
+│  Layer 4: MONITORING                                            │
+│  ─────────────────────────                                      │
+│  • Log tất cả LLM calls                                         │
+│  • Alert on anomalous behavior                                  │
+│  • Regular security audits                                      │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-46">6.2 Data Handling Rules</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                 DATA CLASSIFICATION FOR LLM                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ✅ CAN SEND TO LLM (Cloud API)                                 │
+│  • Job names, statuses                                          │
+│  • Generic error messages                                       │
+│  • Aggregated metrics                                           │
+│  • Schema definitions (structure only)                          │
+│                                                                  │
+│  ⚠️ MUST REDACT/MASK                                            │
+│  • Connection strings (mask passwords)                          │
+│  • IP addresses (generalize)                                    │
+│  • User emails (hash or placeholder)                            │
+│  • Row-level data samples                                       │
+│                                                                  │
+│  ❌ NEVER SEND TO EXTERNAL LLM                                  │
+│  • Passwords, API keys, tokens                                  │
+│  • PII (names, SSN, addresses)                                  │
+│  • Financial data (account numbers)                             │
+│  • Healthcare data (PHI)                                        │
+│  • Proprietary algorithms                                       │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-47">6.3 Implementation Security</h3>
+<pre><code class="language-python"># Credential management
+import os
+from dotenv import load_dotenv
+
+# ✅ GOOD: Environment variables
+LLM_API_KEY = os.getenv("LLM_API_KEY")
+DB_CONNECTION = os.getenv("DB_CONNECTION")
+
+# ❌ BAD: Hardcoded credentials
+# LLM_API_KEY = "sk-1234567890"
+
+
+# Data masking before LLM call
+def mask_sensitive_data(log_message):
+    import re
+
+    # Mask passwords
+    log_message = re.sub(
+        r'password[=:]\s*\S+',
+        'password=***MASKED***',
+        log_message,
+        flags=re.IGNORECASE
+    )
+
+    # Mask IP addresses
+    log_message = re.sub(
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}',
+        'X.X.X.X',
+        log_message
+    )
+
+    # Mask emails
+    log_message = re.sub(
+        r'[\w\.-]+@[\w\.-]+',
+        '***@***.***',
+        log_message
+    )
+
+    return log_message
+
+
+# Action whitelist
+ALLOWED_ACTIONS = {
+    "retry_job": {"risk": "low", "approval": False},
+    "increase_memory": {"risk": "medium", "approval": False},
+    "skip_job": {"risk": "medium", "approval": True},
+    "modify_schema": {"risk": "high", "approval": True},
+    "delete_data": {"risk": "critical", "approval": True},
+}
+
+def execute_action(action, params):
+    if action not in ALLOWED_ACTIONS:
+        raise SecurityError(f"Action '{action}' not in whitelist")
+
+    if ALLOWED_ACTIONS[action]["approval"]:
+        approval = request_human_approval(action, params)
+        if not approval:
+            return {"status": "rejected", "reason": "Human rejected"}
+
+    return perform_action(action, params)
+</code></pre>
+<h3 id="heading-48">6.4 Self-host Security Benefits</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Cloud API</th>
+<th>Self-host</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Data location</td>
+<td>External servers</td>
+<td>Your infrastructure</td>
+</tr>
+<tr>
+<td>Data retention</td>
+<td>Vendor policy</td>
+<td>Your control</td>
+</tr>
+<tr>
+<td>Compliance</td>
+<td>Depends on vendor</td>
+<td>Full control</td>
+</tr>
+<tr>
+<td>Audit</td>
+<td>Limited</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>Network exposure</td>
+<td>Internet required</td>
+<td>Can be air-gapped</td>
+</tr>
+</tbody></table>
+<p><strong>Recommendation</strong>: Self-host nếu:</p>
+<ul>
+<li>Data contains PII/PHI</li>
+<li>Regulatory requirements (GDPR, HIPAA)</li>
+<li>Company security policy prohibits external AI</li>
+<li>Need complete audit trail</li>
+</ul>
+<h3 id="heading-49">6.5 Security Checklist</h3>
+<pre><code>□ Credentials stored in environment variables / secrets manager
+□ LLM API keys rotated regularly
+□ Agent has minimum required permissions
+□ Sensitive data masked before LLM calls
+□ Action whitelist implemented
+□ All actions logged with full context
+□ Human approval for high-risk actions
+□ Regular security audit of agent behavior
+□ Incident response plan for agent compromise
+□ Self-host evaluated if data is sensitive
+</code></pre>
+<hr>
+<h2 id="heading-50">7. Những điều cần đặc biệt lưu ý</h2>
+<h3 id="heading-51">7.1 Common Pitfalls</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    ⚠️ COMMON PITFALLS                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  1. OVER-AUTOMATION TOO EARLY                                   │
+│     ❌ Agent tự động fix mọi thứ từ ngày 1                      │
+│     ✅ Bắt đầu với monitoring, tăng dần autonomy                │
+│                                                                  │
+│  2. IGNORING EDGE CASES                                         │
+│     ❌ Chỉ test với happy path                                  │
+│     ✅ Test với historical failures, weird scenarios            │
+│                                                                  │
+│  3. NO FALLBACK MECHANISM                                       │
+│     ❌ Agent fail = silent failure                              │
+│     ✅ Agent fail = traditional alerting kicks in               │
+│                                                                  │
+│  4. POOR OBSERVABILITY                                          │
+│     ❌ Không biết agent đang làm gì                             │
+│     ✅ Log mọi decision, action, outcome                        │
+│                                                                  │
+│  5. COST EXPLOSION                                              │
+│     ❌ Gọi LLM cho mọi event                                    │
+│     ✅ Cache, batch, filter before LLM calls                    │
+│                                                                  │
+│  6. TRUSTING LLM BLINDLY                                        │
+│     ❌ Execute mọi suggestion                                   │
+│     ✅ Validate, confirm, guardrails                            │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-52">7.2 LLM Limitations</h3>
+<table>
+<thead>
+<tr>
+<th>Limitation</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Hallucination</strong></td>
+<td>Wrong analysis/suggestions</td>
+<td>Confidence thresholds, validation</td>
+</tr>
+<tr>
+<td><strong>Context window</strong></td>
+<td>Cannot see full history</td>
+<td>Summarization, relevant context only</td>
+</tr>
+<tr>
+<td><strong>Stochastic output</strong></td>
+<td>Inconsistent responses</td>
+<td>Temperature=0, structured output</td>
+</tr>
+<tr>
+<td><strong>Latency</strong></td>
+<td>Slow response</td>
+<td>Caching, async processing</td>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td>Budget overrun</td>
+<td>Rate limiting, efficient prompts</td>
+</tr>
+<tr>
+<td><strong>Availability</strong></td>
+<td>API downtime</td>
+<td>Fallback providers, self-host</td>
+</tr>
+</tbody></table>
+<h3 id="heading-53">7.3 Operational Considerations</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    OPERATIONAL CHECKLIST                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  BEFORE DEPLOYMENT                                               │
+│  □ Define success metrics                                       │
+│  □ Establish baseline (current MTTR, manual effort)             │
+│  □ Get stakeholder buy-in                                       │
+│  □ Document rollback procedure                                  │
+│  □ Set up monitoring for the agent itself                       │
+│                                                                  │
+│  DURING OPERATION                                                │
+│  □ Monitor agent accuracy weekly                                │
+│  □ Review false positives/negatives                             │
+│  □ Track cost per decision                                      │
+│  □ Gather user feedback                                         │
+│  □ Update playbooks based on new patterns                       │
+│                                                                  │
+│  ONGOING MAINTENANCE                                             │
+│  □ Regular prompt optimization                                  │
+│  □ Model updates evaluation                                     │
+│  □ Security patches                                             │
+│  □ Capacity planning                                            │
+│  □ Knowledge base updates                                       │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-54">7.4 When NOT to Use AI Agent</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Reason</th>
+<th>Alternative</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Very few jobs (&lt; 10)</td>
+<td>Overhead &gt; benefit</td>
+<td>Simple scripts + alerts</td>
+</tr>
+<tr>
+<td>All jobs are unique</td>
+<td>No patterns to learn</td>
+<td>Manual + documentation</td>
+</tr>
+<tr>
+<td>Extremely critical (trading)</td>
+<td>Risk too high</td>
+<td>Human-only with tools</td>
+</tr>
+<tr>
+<td>No existing monitoring</td>
+<td>Need foundation first</td>
+<td>Set up observability</td>
+</tr>
+<tr>
+<td>Team resistance</td>
+<td>Won't be used</td>
+<td>Training + gradual intro</td>
+</tr>
+</tbody></table>
+<h3 id="heading-55">7.5 Success Metrics</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    SUCCESS METRICS                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  EFFICIENCY                                                      │
+│  • MTTR (Mean Time To Resolution): Target &lt; 15 min              │
+│  • Manual intervention rate: Target &lt; 20%                       │
+│  • Engineer time saved: Target &gt; 2 hours/day                    │
+│                                                                  │
+│  QUALITY                                                         │
+│  • Agent accuracy: Target &gt; 85%                                 │
+│  • False positive rate: Target &lt; 10%                            │
+│  • Missed incidents: Target &lt; 5%                                │
+│                                                                  │
+│  COST                                                            │
+│  • Cost per incident: Track and optimize                        │
+│  • Total monthly cost: Within budget                            │
+│  • ROI: Positive by month 3                                     │
+│                                                                  │
+│  ADOPTION                                                        │
+│  • Team satisfaction: Survey quarterly                          │
+│  • Feature usage: Track which features used                     │
+│  • Trust level: Increasing autonomy over time                   │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-56">7.6 Red Flags to Watch</h3>
+<pre><code>🚩 Agent making same mistake repeatedly
+   → Need to update training/prompts
+
+🚩 Increasing false positive rate
+   → Thresholds need adjustment
+
+🚩 Cost growing faster than usage
+   → Inefficient prompts or unnecessary calls
+
+🚩 Team bypassing agent recommendations
+   → Trust issue, need to investigate
+
+🚩 Agent response time degrading
+   → Infrastructure or model issues
+
+🚩 Same error patterns not being caught
+   → Pattern database needs update
+</code></pre>
+<hr>
+<h2 id="heading-57">8. Summary</h2>
+<h3 id="heading-58">8.1 Executive Summary</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    EXECUTIVE SUMMARY                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  AI Agent cho DW/ETL monitoring là giải pháp giúp:             │
+│                                                                  │
+│  ✓ Giảm 80% thời gian routine monitoring                       │
+│  ✓ Phát hiện và xử lý incidents trong phút (không phải giờ)    │
+│  ✓ Hoạt động 24/7 không cần on-call cho issues thông thường    │
+│  ✓ Học từ patterns để ngày càng thông minh hơn                 │
+│                                                                  │
+│  Chi phí: $0-600/tháng tùy quy mô                               │
+│  ROI: Break-even từ tháng đầu tiên                              │
+│  Timeline: MVP trong 2-3 tuần                                   │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="heading-59">8.2 Key Recommendations</h3>
+<table>
+<thead>
+<tr>
+<th>Quy mô</th>
+<th>Model đề xuất</th>
+<th>Chi phí/tháng</th>
+<th>Timeline</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nhỏ (&lt; 50 jobs)</td>
+<td>Groq Free</td>
+<td>$0</td>
+<td>2 tuần</td>
+</tr>
+<tr>
+<td>Vừa (50-200 jobs)</td>
+<td>Self-host 7B + Groq</td>
+<td>$50-150</td>
+<td>4 tuần</td>
+</tr>
+<tr>
+<td>Lớn (200+ jobs)</td>
+<td>Self-host 32B + Paid backup</td>
+<td>$200-600</td>
+<td>6-8 tuần</td>
+</tr>
+</tbody></table>
+<h3 id="heading-60">8.3 Quick Start Checklist</h3>
+<pre><code>Week 1:
+□ Chọn model (Groq Free hoặc Self-host)
+□ Setup LangChain environment
+□ Kết nối Airflow/Dagster API
+□ Tạo Slack webhook
+
+Week 2:
+□ Build basic monitoring agent
+□ Implement job status checking
+□ Setup alerting
+□ Test với mock failures
+
+Week 3:
+□ Deploy to production (monitoring mode only)
+□ Tune thresholds
+□ Document runbooks
+□ Train team
+
+Week 4+:
+□ Add error analysis
+□ Implement recommendations
+□ Gradual automation
+□ Continuous improvement
+</code></pre>
+<h3 id="heading-61">8.4 Final Recommendations</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    FINAL RECOMMENDATIONS                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  DO:                                                             │
+│  ✓ Start với monitoring + alerting (Phase 1)                   │
+│  ✓ Use hybrid approach (local simple + cloud complex)          │
+│  ✓ Implement human-in-the-loop từ đầu                          │
+│  ✓ Log mọi thứ cho observability                               │
+│  ✓ Measure và iterate                                          │
+│                                                                  │
+│  DON'T:                                                          │
+│  ✗ Over-automate ngày đầu                                      │
+│  ✗ Trust LLM blindly                                           │
+│  ✗ Ignore security/privacy                                     │
+│  ✗ Skip testing với edge cases                                 │
+│  ✗ Forget fallback mechanisms                                  │
+│                                                                  │
+│  REMEMBER:                                                       │
+│  → AI Agent là công cụ hỗ trợ, không thay thế engineer         │
+│  → Start simple, iterate, build trust                          │
+│  → Measure ROI từ đầu                                          │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr>
+<h2 id="heading-62">Appendix</h2>
+<h3 id="heading-63">A. Technology Stack Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Recommended</th>
+<th>Alternatives</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LLM Framework</strong></td>
+<td>LangChain</td>
+<td>CrewAI, AutoGen</td>
+</tr>
+<tr>
+<td><strong>LLM (Free)</strong></td>
+<td>Groq (Llama 70B)</td>
+<td>Gemini, Cloudflare</td>
+</tr>
+<tr>
+<td><strong>LLM (Self-host)</strong></td>
+<td>Qwen 2.5 + Ollama</td>
+<td>Llama + vLLM</td>
+</tr>
+<tr>
+<td><strong>Orchestrator</strong></td>
+<td>Airflow/Dagster</td>
+<td>Prefect</td>
+</tr>
+<tr>
+<td><strong>Observability</strong></td>
+<td>Monte Carlo/Soda</td>
+<td>Great Expectations</td>
+</tr>
+<tr>
+<td><strong>Alerting</strong></td>
+<td>Slack</td>
+<td>Teams, PagerDuty</td>
+</tr>
+<tr>
+<td><strong>Vector DB</strong></td>
+<td>Chroma</td>
+<td>Pinecone, Weaviate</td>
+</tr>
+</tbody></table>
+<h3 id="heading-64">B. Cost Calculator</h3>
+<pre><code>Monthly Cost Estimation:
+
+Small Scale (&lt; 50 jobs):
+  LLM API: $0 (Groq Free)
+  Infrastructure: $0-20
+  Total: $0-20/month
+
+Medium Scale (50-200 jobs):
+  LLM API: $0 (Self-host)
+  GPU Server: $50-100
+  Infrastructure: $20-50
+  Total: $70-150/month
+
+Large Scale (200+ jobs):
+  LLM API: $50-200 (backup)
+  GPU Server: $150-400
+  Infrastructure: $50-100
+  Total: $250-700/month
+</code></pre>
+<h3 id="heading-65">C. Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Agentic AI</strong></td>
+<td>AI systems that can observe, reason, and act autonomously</td>
+</tr>
+<tr>
+<td><strong>ReAct</strong></td>
+<td>Reasoning + Acting pattern for AI agents</td>
+</tr>
+<tr>
+<td><strong>Self-healing</strong></td>
+<td>Automatic detection and remediation of issues</td>
+</tr>
+<tr>
+<td><strong>MTTR</strong></td>
+<td>Mean Time To Resolution</td>
+</tr>
+<tr>
+<td><strong>Human-in-the-loop</strong></td>
+<td>Design pattern requiring human approval for certain actions</td>
+</tr>
+<tr>
+<td><strong>Guardrails</strong></td>
+<td>Safety constraints on AI agent behavior</td>
+</tr>
+</tbody></table>
+<hr>
+
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Outline -->
+      <aside class="outline-sidebar">
+        <div class="outline-header">
+          <h3>Outline</h3>
+        </div>
+        <nav id="outline" class="outline">
+<ul class="outline-list">
+      <li class="outline-item outline-level-1">
+        <a href="#heading-0" class="outline-link">BÁO CÁO TỔNG HỢP</a>
+      </li>
+    
+      <li class="outline-item outline-level-1">
+        <a href="#heading-1" class="outline-link">Triển khai AI Agent cho Quản lý Data Warehouse và ETL Jobs</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-2" class="outline-link">Mục lục</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-3" class="outline-link">1. Vì sao cần triển khai AI Agent</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-4" class="outline-link">1.1 Thực trạng hiện tại</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-5" class="outline-link">1.2 AI Agent giải quyết được gì</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-6" class="outline-link">1.3 Lợi ích cụ thể</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-7" class="outline-link">2. Các kịch bản AI Agent có thể xử lý</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-8" class="outline-link">2.1 Tổng quan kịch bản</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-9" class="outline-link">2.2 Chi tiết từng kịch bản</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-10" class="outline-link">Kịch bản 1: Job Monitoring &amp; Alerting</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-11" class="outline-link">Kịch bản 2: Intelligent Error Analysis</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-12" class="outline-link">Kịch bản 3: Auto-Retry với Smart Logic</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-13" class="outline-link">Kịch bản 4: Schema Change Detection</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-14" class="outline-link">Kịch bản 5: Data Quality Monitoring</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-15" class="outline-link">Kịch bản 6: Natural Language Interface</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-16" class="outline-link">Kịch bản 7: Cost Monitoring &amp; Optimization</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-17" class="outline-link">Kịch bản 8: Automated Reporting</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-18" class="outline-link">2.3 Tổng hợp khả năng xử lý</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-19" class="outline-link">3. So sánh Model và Đề xuất theo Quy mô</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-20" class="outline-link">3.1 Tổng quan lựa chọn</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-21" class="outline-link">3.2 Chi tiết từng option</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-22" class="outline-link">A. FREE API Options</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-23" class="outline-link">B. SELF-HOST Options</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-24" class="outline-link">C. PAID API Options (tham khảo)</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-25" class="outline-link">3.3 Đề xuất theo QUY MÔ</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-26" class="outline-link">Quy mô NHỎ (&lt; 50 jobs/ngày)</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-27" class="outline-link">Quy mô TRUNG BÌNH (50-200 jobs/ngày)</a>
+      </li>
+    
+      <li class="outline-item outline-level-4">
+        <a href="#heading-28" class="outline-link">Quy mô LỚN (200+ jobs/ngày)</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-29" class="outline-link">3.4 Decision Matrix</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-30" class="outline-link">3.5 Quick Decision Guide</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-31" class="outline-link">4. Kế hoạch Triển khai</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-32" class="outline-link">4.1 Roadmap tổng quan</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-33" class="outline-link">4.2 Phase 1: Foundation (Tuần 1-3)</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-34" class="outline-link">4.3 Phase 2: Intelligence (Tuần 4-7)</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-35" class="outline-link">4.4 Phase 3: Automation (Tuần 8-14)</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-36" class="outline-link">4.5 Phase 4: Optimization (Ongoing)</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-37" class="outline-link">4.6 Resource Requirements</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-38" class="outline-link">5. Best Practices</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-39" class="outline-link">5.1 Design Principles</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-40" class="outline-link">5.2 Confidence-Based Decision Making</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-41" class="outline-link">5.3 Prompt Engineering Best Practices</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-42" class="outline-link">5.4 Error Handling Patterns</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-43" class="outline-link">5.5 Observability Requirements</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-44" class="outline-link">6. Bảo mật</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-45" class="outline-link">6.1 Security Architecture</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-46" class="outline-link">6.2 Data Handling Rules</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-47" class="outline-link">6.3 Implementation Security</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-48" class="outline-link">6.4 Self-host Security Benefits</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-49" class="outline-link">6.5 Security Checklist</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-50" class="outline-link">7. Những điều cần đặc biệt lưu ý</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-51" class="outline-link">7.1 Common Pitfalls</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-52" class="outline-link">7.2 LLM Limitations</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-53" class="outline-link">7.3 Operational Considerations</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-54" class="outline-link">7.4 When NOT to Use AI Agent</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-55" class="outline-link">7.5 Success Metrics</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-56" class="outline-link">7.6 Red Flags to Watch</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-57" class="outline-link">8. Summary</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-58" class="outline-link">8.1 Executive Summary</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-59" class="outline-link">8.2 Key Recommendations</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-60" class="outline-link">8.3 Quick Start Checklist</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-61" class="outline-link">8.4 Final Recommendations</a>
+      </li>
+    
+      <li class="outline-item outline-level-2">
+        <a href="#heading-62" class="outline-link">Appendix</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-63" class="outline-link">A. Technology Stack Reference</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-64" class="outline-link">B. Cost Calculator</a>
+      </li>
+    
+      <li class="outline-item outline-level-3">
+        <a href="#heading-65" class="outline-link">C. Glossary</a>
+      </li>
+    </ul>
+        </nav>
+      </aside>
+    </div>
+
+    <!-- Mobile Toggle Button -->
+    <button id="toggle-outline" class="toggle-outline">
+      <span>☰</span> Outline
+    </button>
+  </div>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const links = document.querySelectorAll('.outline-link');
+      const content = document.querySelector('.viewer-content');
+
+      // Smooth scroll on click
+      links.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href').substring(1);
+          const target = document.getElementById(targetId);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            links.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+          }
+        });
+      });
+
+      // Scroll spy
+      if (content) {
+        content.addEventListener('scroll', function() {
+          let current = '';
+          const headings = document.querySelectorAll('[id^="heading-"]');
+
+          headings.forEach(heading => {
+            const rect = heading.getBoundingClientRect();
+            if (rect.top <= 100) {
+              current = heading.id;
+            }
+          });
+
+          links.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+              link.classList.add('active');
+            }
+          });
+        });
+      }
+
+      // Mobile toggle
+      const toggleBtn = document.getElementById('toggle-outline');
+      const outlineSidebar = document.querySelector('.outline-sidebar');
+
+      if (toggleBtn && outlineSidebar) {
+        toggleBtn.addEventListener('click', function() {
+          outlineSidebar.classList.toggle('open');
+        });
+      }
+    });
+  
+  </script>
+</body>
+</html>
