@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historical Performance - TVS Strategies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0F172A',
+                            800: '#1E293B',
+                            700: '#334155',
+                            600: '#475569',
+                        },
+                        accent: {
+                            blue: '#3B82F6',
+                            purple: '#8B5CF6',
+                            amber: '#F59E0B',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Dark mode scrollbar */
+        .dark .scrollbar-thin::-webkit-scrollbar {
+            height: 6px;
+        }
+        .dark .scrollbar-thin::-webkit-scrollbar-track {
+            background: #1E293B;
+            border-radius: 3px;
+        }
+        .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #64748B;
+        }
+        /* Light mode scrollbar */
+        .scrollbar-thin::-webkit-scrollbar {
+            height: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #E2E8F0;
+            border-radius: 3px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #94A3B8;
+            border-radius: 3px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #64748B;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-dark-900 text-slate-900 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
+    <!-- Header -->
+    <header class="border-b border-slate-200 dark:border-dark-700 bg-white/80 dark:bg-dark-800/50 backdrop-blur-sm sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-gradient-to-br from-accent-blue to-accent-purple rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-semibold">Historical Performance</h1>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">TVS Quant Strategies</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">Cập nhật: <span class="text-slate-700 dark:text-slate-200 font-medium">16/01/2026 09:30</span></span>
+                    <!-- Theme Toggle -->
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-100 dark:bg-dark-700 hover:bg-slate-200 dark:hover:bg-dark-600 transition-colors cursor-pointer" title="Chuyển theme">
+                        <!-- Sun icon (dark mode) -->
+                        <svg class="w-5 h-5 text-slate-600 dark:text-slate-300 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <!-- Moon icon (light mode) -->
+                        <svg class="w-5 h-5 text-slate-600 dark:text-slate-300 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
+        <!-- Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-sm text-slate-500 dark:text-slate-400">Chế độ hiển thị:</span>
+                <div class="flex bg-slate-100 dark:bg-dark-800 rounded-lg p-1 border border-slate-200 dark:border-dark-700">
+                    <button id="btn-ma" onclick="setViewMode('ma')" class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-accent-blue text-white">
+                        Master Account
+                    </button>
+                    <button id="btn-all" onclick="setViewMode('all')" class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+                        MA + FAs (Gộp)
+                    </button>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-800 border border-slate-200 dark:border-dark-700 rounded-lg text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-dark-700 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Export Excel
+                </button>
+            </div>
+        </div>
+
+        <!-- Performance Table -->
+        <div class="bg-white dark:bg-dark-800 rounded-xl border border-slate-200 dark:border-dark-700 overflow-hidden shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-dark-700">
+                <h2 class="text-lg font-semibold">Bảng Hiệu Suất Chiến Lược</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Lợi suất TWR (Time-Weighted Return) theo chiến lược và benchmark</p>
+            </div>
+            <div class="overflow-x-auto scrollbar-thin">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-dark-900/50">
+                            <th class="sticky left-0 bg-slate-50 dark:bg-dark-900 z-10 px-4 py-3 text-left font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[200px]">Chiến lược / Benchmark</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[120px]">NAV (D)</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">1D %</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">MTD %</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">Dec-25</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">Nov-25</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">Oct-25</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">Sep-25</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">Aug-25</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">Jul-25</th>
+                            <th class="px-4 py-3 text-left font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[280px]">Cấu trúc DM (MA)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Data populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- YTD Chart -->
+        <div class="bg-white dark:bg-dark-800 rounded-xl border border-slate-200 dark:border-dark-700 overflow-hidden shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-dark-700 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold">Hiệu Suất YTD 2026</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Chuẩn hóa: 31/12/2025 = 100</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleAllSeries()" class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-dark-700 hover:bg-slate-200 dark:hover:bg-dark-600 text-slate-600 dark:text-slate-300 rounded-md transition-colors cursor-pointer">
+                        Toggle All
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="h-[400px]">
+                    <canvas id="ytdChart"></canvas>
+                </div>
+                <!-- Legend -->
+                <div id="chart-legend" class="mt-4 flex flex-wrap gap-3 justify-center">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Data
+        const strategies = [
+            {
+                name: 'QE Hybrid FINLEAD',
+                type: 'strategy',
+                color: '#3B82F6',
+                navMA: 15234567890,
+                navAll: 45678901234,
+                returns1dMA: 1.23,
+                returns1dAll: 1.18,
+                mtdMA: 2.45,
+                mtdAll: 2.31,
+                monthly: [3.21, 2.15, -1.45, 4.32, 1.89, 2.67],
+                portfolio: [
+                    { code: 'FPT', weight: 25 },
+                    { code: 'VCB', weight: 20 },
+                    { code: 'HPG', weight: 18 },
+                    { code: 'MWG', weight: 15 },
+                    { code: 'VNM', weight: 12 },
+                    { code: 'Cash', weight: 10 }
+                ]
+            },
+            {
+                name: 'QT Momentum B100',
+                type: 'strategy',
+                color: '#8B5CF6',
+                navMA: 8765432100,
+                navAll: 23456789012,
+                returns1dMA: 0.87,
+                returns1dAll: 0.92,
+                mtdMA: 1.89,
+                mtdAll: 1.95,
+                monthly: [2.45, 1.78, 0.56, 3.12, 2.34, 1.45],
+                portfolio: [
+                    { code: 'VHM', weight: 22 },
+                    { code: 'VIC', weight: 18 },
+                    { code: 'TCB', weight: 16 },
+                    { code: 'MBB', weight: 14 },
+                    { code: 'ACB', weight: 12 },
+                    { code: 'Cash', weight: 18 }
+                ]
+            },
+            {
+                name: 'QE Alpha VN30',
+                type: 'strategy',
+                color: '#10B981',
+                navMA: 12345678900,
+                navAll: 34567890123,
+                returns1dMA: -0.45,
+                returns1dAll: -0.38,
+                mtdMA: 0.78,
+                mtdAll: 0.85,
+                monthly: [1.89, 0.45, -2.34, 2.67, 0.98, 1.23],
+                portfolio: [
+                    { code: 'VCB', weight: 28 },
+                    { code: 'BID', weight: 22 },
+                    { code: 'CTG', weight: 18 },
+                    { code: 'VPB', weight: 15 },
+                    { code: 'Cash', weight: 17 }
+                ]
+            },
+            {
+                name: 'QT Value DIAMOND',
+                type: 'strategy',
+                color: '#F59E0B',
+                navMA: 6543210987,
+                navAll: 18765432109,
+                returns1dMA: 0.56,
+                returns1dAll: 0.61,
+                mtdMA: 1.34,
+                mtdAll: 1.42,
+                monthly: [2.12, 1.34, -0.78, 2.89, 1.56, 0.89],
+                portfolio: [
+                    { code: 'FPT', weight: 30 },
+                    { code: 'MWG', weight: 24 },
+                    { code: 'PNJ', weight: 18 },
+                    { code: 'REE', weight: 15 },
+                    { code: 'Cash', weight: 13 }
+                ]
+            },
+            {
+                name: 'QE Sector Rotation',
+                type: 'strategy',
+                color: '#EC4899',
+                navMA: 9876543210,
+                navAll: 28901234567,
+                returns1dMA: 1.67,
+                returns1dAll: 1.54,
+                mtdMA: 3.12,
+                mtdAll: 2.98,
+                monthly: [4.56, 2.89, 1.23, 3.45, 2.12, 3.34],
+                portfolio: [
+                    { code: 'HPG', weight: 35 },
+                    { code: 'HSG', weight: 20 },
+                    { code: 'NKG', weight: 15 },
+                    { code: 'KBC', weight: 18 },
+                    { code: 'Cash', weight: 12 }
+                ]
+            }
+        ];
+
+        const benchmarks = [
+            { name: 'VN-Index', type: 'benchmark', color: '#64748B', nav: 1256.78, returns1d: 0.45, mtd: 1.12, monthly: [1.23, 0.89, -0.56, 1.78, 0.67, 0.95] },
+            { name: 'VN30', type: 'benchmark', color: '#94A3B8', nav: 1345.23, returns1d: 0.52, mtd: 1.28, monthly: [1.45, 0.98, -0.34, 1.89, 0.78, 1.02] },
+            { name: 'VNFinlead Index', type: 'benchmark', color: '#CBD5E1', nav: 1567.89, returns1d: 0.38, mtd: 0.95, monthly: [1.12, 0.76, -0.67, 1.56, 0.54, 0.87] },
+            { name: 'VNDiamond Index', type: 'benchmark', color: '#E2E8F0', nav: 1432.56, returns1d: 0.61, mtd: 1.45, monthly: [1.67, 1.12, -0.45, 2.01, 0.89, 1.15] }
+        ];
+
+        let viewMode = 'ma'; // 'ma' or 'all'
+        let isDarkMode = true;
+
+        // Theme Toggle
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+            updateChartTheme();
+            renderTable();
+            renderLegend();
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode;
+            document.getElementById('btn-ma').className = mode === 'ma'
+                ? 'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-accent-blue text-white'
+                : 'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200';
+            document.getElementById('btn-all').className = mode === 'all'
+                ? 'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-accent-blue text-white'
+                : 'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200';
+            renderTable();
+        }
+
+        function formatNumber(num, decimals = 2) {
+            if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+            return num.toLocaleString('vi-VN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+
+        function formatReturn(val) {
+            const color = val > 0 ? 'text-emerald-600 dark:text-emerald-400' : val < 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-500 dark:text-slate-400';
+            const prefix = val > 0 ? '+' : '';
+            return `<span class="${color} font-medium">${prefix}${val.toFixed(2)}%</span>`;
+        }
+
+        function renderPortfolio(portfolio) {
+            return portfolio.map(p =>
+                `<span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-dark-700 rounded text-xs">
+                    <span class="text-slate-700 dark:text-slate-200 font-medium">${p.code}</span>
+                    <span class="text-slate-500 dark:text-slate-400">${p.weight}%</span>
+                </span>`
+            ).join(' ');
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            let html = '';
+
+            // Strategies
+            strategies.forEach(s => {
+                const nav = viewMode === 'ma' ? s.navMA : s.navAll;
+                const r1d = viewMode === 'ma' ? s.returns1dMA : s.returns1dAll;
+                const mtd = viewMode === 'ma' ? s.mtdMA : s.mtdAll;
+
+                html += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-dark-700/50 transition-colors cursor-pointer">
+                        <td class="sticky left-0 bg-white dark:bg-dark-800 z-10 px-4 py-3 border-b border-slate-200 dark:border-dark-700">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full" style="background: ${s.color}"></div>
+                                <span class="font-medium text-slate-900 dark:text-slate-100">${s.name}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700 text-slate-700 dark:text-slate-200 font-mono">${formatNumber(nav)}</td>
+                        <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(r1d)}</td>
+                        <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(mtd)}</td>
+                        ${s.monthly.map(m => `<td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(m)}</td>`).join('')}
+                        <td class="px-4 py-3 border-b border-slate-200 dark:border-dark-700">
+                            <div class="flex flex-wrap gap-1">${renderPortfolio(s.portfolio)}</div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Separator
+            html += `<tr class="h-2 bg-slate-100 dark:bg-dark-900"><td colspan="11"></td></tr>`;
+
+            // Benchmarks
+            benchmarks.forEach(b => {
+                html += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-dark-700/50 transition-colors cursor-pointer bg-slate-50/50 dark:bg-dark-900/30">
+                        <td class="sticky left-0 bg-white dark:bg-dark-800 z-10 px-4 py-3 border-b border-slate-200 dark:border-dark-700">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full border-2" style="border-color: ${b.color}"></div>
+                                <span class="font-medium text-slate-600 dark:text-slate-300">${b.name}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700 text-slate-600 dark:text-slate-300 font-mono">${formatNumber(b.nav)}</td>
+                        <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(b.returns1d)}</td>
+                        <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(b.mtd)}</td>
+                        ${b.monthly.map(m => `<td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(m)}</td>`).join('')}
+                        <td class="px-4 py-3 border-b border-slate-200 dark:border-dark-700 text-slate-400 dark:text-slate-500 italic">—</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // Chart
+        function generateYTDData() {
+            const labels = [];
+            const startDate = new Date(2025, 11, 31); // Dec 31, 2025
+            const today = new Date(2026, 0, 16); // Jan 16, 2026
+
+            for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+                if (d.getDay() !== 0 && d.getDay() !== 6) { // Skip weekends
+                    labels.push(d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }));
+                }
+            }
+            return labels;
+        }
+
+        function generateSeriesData(baseReturn, volatility, length) {
+            const data = [100];
+            for (let i = 1; i < length; i++) {
+                const dailyReturn = (baseReturn / 252) + (Math.random() - 0.5) * volatility;
+                data.push(data[i - 1] * (1 + dailyReturn));
+            }
+            return data;
+        }
+
+        const labels = generateYTDData();
+
+        const datasets = [
+            ...strategies.map(s => ({
+                label: s.name,
+                data: generateSeriesData(s.mtdMA * 12, 0.015, labels.length),
+                borderColor: s.color,
+                backgroundColor: s.color + '20',
+                borderWidth: 2,
+                tension: 0.3,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                hidden: false
+            })),
+            ...benchmarks.map(b => ({
+                label: b.name,
+                data: generateSeriesData(b.mtd * 12, 0.01, labels.length),
+                borderColor: b.color,
+                backgroundColor: 'transparent',
+                borderWidth: 1.5,
+                borderDash: [5, 5],
+                tension: 0.3,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                hidden: false
+            }))
+        ];
+
+        let chart;
+
+        function initChart() {
+            const ctx = document.getElementById('ytdChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#1E293B',
+                            titleColor: '#F8FAFC',
+                            bodyColor: '#CBD5E1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#334155',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94A3B8',
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 10
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#334155',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94A3B8',
+                                callback: function(value) {
+                                    return value.toFixed(0);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            renderLegend();
+        }
+
+        function renderLegend() {
+            const container = document.getElementById('chart-legend');
+            let html = '';
+
+            datasets.forEach((ds, i) => {
+                const isStrategy = i < strategies.length;
+                const borderStyle = isStrategy ? '' : 'border-dashed';
+                const hidden = chart.isDatasetHidden(i);
+                const opacity = hidden ? 'opacity-40' : '';
+
+                html += `
+                    <button onclick="toggleSeries(${i})" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-dark-700 hover:bg-slate-200 dark:hover:bg-dark-600 transition-colors cursor-pointer ${opacity}">
+                        <span class="w-4 h-0.5 ${borderStyle}" style="background: ${ds.borderColor}; ${isStrategy ? '' : 'border-bottom: 2px dashed ' + ds.borderColor + '; background: transparent;'}"></span>
+                        <span class="text-xs font-medium text-slate-600 dark:text-slate-300">${ds.label}</span>
+                    </button>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function updateChartTheme() {
+            if (!chart) return;
+
+            const gridColor = isDarkMode ? '#334155' : '#E2E8F0';
+            const tickColor = isDarkMode ? '#94A3B8' : '#64748B';
+            const tooltipBg = isDarkMode ? '#1E293B' : '#FFFFFF';
+            const tooltipTitle = isDarkMode ? '#F8FAFC' : '#0F172A';
+            const tooltipBody = isDarkMode ? '#CBD5E1' : '#475569';
+            const tooltipBorder = isDarkMode ? '#334155' : '#E2E8F0';
+
+            chart.options.scales.x.grid.color = gridColor;
+            chart.options.scales.x.ticks.color = tickColor;
+            chart.options.scales.y.grid.color = gridColor;
+            chart.options.scales.y.ticks.color = tickColor;
+            chart.options.plugins.tooltip.backgroundColor = tooltipBg;
+            chart.options.plugins.tooltip.titleColor = tooltipTitle;
+            chart.options.plugins.tooltip.bodyColor = tooltipBody;
+            chart.options.plugins.tooltip.borderColor = tooltipBorder;
+
+            chart.update();
+        }
+
+        function toggleSeries(index) {
+            chart.setDatasetVisibility(index, !chart.isDatasetVisible(index));
+            chart.update();
+            renderLegend();
+        }
+
+        function toggleAllSeries() {
+            const allVisible = datasets.every((_, i) => chart.isDatasetVisible(i));
+            datasets.forEach((_, i) => {
+                chart.setDatasetVisibility(i, !allVisible);
+            });
+            chart.update();
+            renderLegend();
+        }
+
+        // Init
+        renderTable();
+        initChart();
+    </script>
+</body>
+</html>
