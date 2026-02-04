@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIK Radar - Chi tiết</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .stock-item.active {
+            background: #dcfce7;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="flex items-center justify-between px-2 sm:px-4 py-2">
+            <h1 class="text-lg font-bold text-gray-800">TIK Radar</h1>
+            <button class="text-red-500 text-2xl font-light">&times;</button>
+        </div>
+    </header>
+
+    <!-- Banner -->
+    <div class="mx-1 sm:mx-2 mt-2">
+        <div class="bg-green-100 p-3 flex items-center gap-3">
+            <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+            </div>
+            <div class="min-w-0">
+                <h2 class="text-base sm:text-lg font-bold text-green-800">TIK RADAR - BULL</h2>
+                <p class="text-green-600 text-sm truncate">Ưu tiên tích lũy khi có nhịp điều chỉnh</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="mx-1 sm:mx-2 mt-2 bg-white py-2 px-2">
+        <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs text-gray-500">Lọc:</span>
+            <button type="button" id="filter-consensus" class="filter-btn active flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all bg-green-50 text-green-700 border-green-500" onclick="toggleFilter(this)">
+                <svg class="w-3.5 h-3.5 check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                Consensus
+            </button>
+            <button type="button" id="filter-ewealth" class="filter-btn active flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all bg-green-50 text-green-700 border-green-500" onclick="toggleFilter(this)">
+                <svg class="w-3.5 h-3.5 check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                eWealth TA
+            </button>
+            <button type="button" id="filter-tikstock" class="filter-btn active flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all bg-green-50 text-green-700 border-green-500" onclick="toggleFilter(this)">
+                <svg class="w-3.5 h-3.5 check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                TIK Stock
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-row mt-1 mx-1 sm:mx-2 gap-1 sm:gap-2 pb-2">
+        <!-- Left Sidebar - Stock List -->
+        <div class="w-14 sm:w-16 lg:w-40 flex-shrink-0">
+            <div class="bg-white overflow-hidden">
+                <div class="hidden lg:block py-2 px-2 bg-gray-50 border-b font-semibold text-gray-600 text-xs">Danh sách mã</div>
+                <div class="divide-y divide-gray-100 max-h-[75vh] overflow-y-auto">
+                    <button onclick="selectStock('BID')" class="stock-item w-full text-left px-1.5 sm:px-2 lg:px-3 py-2 hover:bg-green-50 transition" data-stock="BID">
+                        <span class="font-bold text-green-600 text-xs sm:text-sm">BID</span>
+                        <span class="hidden lg:inline text-gray-500 text-xs ml-1">54,100</span>
+                    </button>
+                    <button onclick="selectStock('BSR')" class="stock-item w-full text-left px-1.5 sm:px-2 lg:px-3 py-2 hover:bg-green-50 transition" data-stock="BSR">
+                        <span class="font-bold text-green-600 text-xs sm:text-sm">BSR</span>
+                        <span class="hidden lg:inline text-gray-500 text-xs ml-1">23,900</span>
+                    </button>
+                    <button onclick="selectStock('BVH')" class="stock-item w-full text-left px-1.5 sm:px-2 lg:px-3 py-2 hover:bg-green-50 transition" data-stock="BVH">
+                        <span class="font-bold text-green-600 text-xs sm:text-sm">BVH</span>
+                        <span class="hidden lg:inline text-gray-500 text-xs ml-1">79,800</span>
+                    </button>
+                    <button onclick="selectStock('BWE')" class="stock-item w-full text-left px-1.5 sm:px-2 lg:px-3 py-2 hover:bg-green-50 transition" data-stock="BWE">
+                        <span class="font-bold text-green-600 text-xs sm:text-sm">BWE</span>
+                        <span class="hidden lg:inline text-gray-500 text-xs ml-1">45,000</span>
+                    </button>
+                    <button onclick="selectStock('CTG')" class="stock-item active w-full text-left px-1.5 sm:px-2 lg:px-3 py-2 hover:bg-green-50 transition" data-stock="CTG">
+                        <span class="font-bold text-green-600 text-xs sm:text-sm">CTG</span>
+                        <span class="hidden lg:inline text-gray-500 text-xs ml-1">39,700</span>
+                    </button>
+                    <button onclick="selectStock('CTR')" class="stock-item w-full text-left px-1.5 sm:px-2 lg:px-3 py-2 hover:bg-green-50 transition" data-stock="CTR">
+                        <span class="font-bold text-green-600 text-xs sm:text-sm">CTR</span>
+                        <span class="hidden lg:inline text-gray-500 text-xs ml-1">100,800</span>
+                    </button>
+                    <button onclick="selectStock('REE')" class="stock-item w-full text-left px-1.5 sm:px-2 lg:px-3 py-2 hover:bg-green-50 transition" data-stock="REE">
+                        <span class="font-bold text-green-600 text-xs sm:text-sm">REE</span>
+                        <span class="hidden lg:inline text-gray-500 text-xs ml-1">62,700</span>
+                    </button>
+                    <button onclick="selectStock('BCM')" class="stock-item w-full text-left px-1.5 sm:px-2 lg:px-3 py-2 hover:bg-green-50 transition" data-stock="BCM">
+                        <span class="font-bold text-green-600 text-xs sm:text-sm">BCM</span>
+                        <span class="hidden lg:inline text-gray-500 text-xs ml-1">74,000</span>
+                    </button>
+                    <button onclick="selectStock('SAB')" class="stock-item w-full text-left px-1.5 sm:px-2 lg:px-3 py-2 hover:bg-green-50 transition" data-stock="SAB">
+                        <span class="font-bold text-green-600 text-xs sm:text-sm">SAB</span>
+                        <span class="hidden lg:inline text-gray-500 text-xs ml-1">52,100</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 bg-white p-2 sm:p-3 min-w-0" id="main-content">
+            <!-- Stock Header -->
+            <div class="mb-2 pb-2 border-b border-dashed border-gray-200">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-lg sm:text-xl font-bold text-green-600" id="stock-code">CTG</span>
+                    <span class="text-sm sm:text-base text-gray-700" id="stock-price">39,700 VND</span>
+                </div>
+                <p class="text-gray-500 mt-0.5 text-xs sm:text-sm line-clamp-2" id="stock-name">Ngân hàng Thương mại Cổ phần Công thương Việt Nam</p>
+            </div>
+
+            <!-- eWealth Consensus Card -->
+            <div class="bg-gray-50 p-2 sm:p-3 mb-2" id="consensus-card">
+                <div class="flex items-center gap-1.5 mb-2">
+                    <h3 class="font-semibold text-gray-700 text-xs sm:text-sm">eWealth Consensus</h3>
+                    <span class="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-500">i</span>
+                </div>
+                <div class="space-y-2 text-xs sm:text-sm">
+                    <div class="flex items-start gap-1.5">
+                        <span class="text-gray-400 mt-0.5">•</span>
+                        <p class="text-gray-600"><span class="text-gray-500">03/02/2026</span>, Cty CK <span class="font-semibold">HSC</span> khuyến nghị <span class="text-green-600 font-semibold">Tăng tỷ trọng</span>, mục tiêu <span class="font-semibold">43,419</span> <span class="text-green-600 font-semibold">(+9.4%)</span></p>
+                    </div>
+                    <div class="flex items-start gap-1.5">
+                        <span class="text-gray-400 mt-0.5">•</span>
+                        <p class="text-gray-600"><span class="text-gray-500">01/02/2026</span>, Cty CK <span class="font-semibold">SSI</span> khuyến nghị <span class="text-green-600 font-semibold">Mua</span>, mục tiêu <span class="font-semibold">45,000</span> <span class="text-green-600 font-semibold">(+13.4%)</span></p>
+                    </div>
+                    <div class="flex items-start gap-1.5">
+                        <span class="text-gray-400 mt-0.5">•</span>
+                        <p class="text-gray-600"><span class="text-gray-500">28/01/2026</span>, Cty CK <span class="font-semibold">VNDirect</span> khuyến nghị <span class="text-green-600 font-semibold">Mua</span>, mục tiêu <span class="font-semibold">42,500</span> <span class="text-green-600 font-semibold">(+7.1%)</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- eWealth TA Card -->
+            <div class="bg-gray-50 p-2 sm:p-3 mb-2" id="ewealth-card">
+                <div class="flex items-center gap-1.5 mb-2">
+                    <h3 class="font-semibold text-gray-700 text-xs sm:text-sm">eWealth TA</h3>
+                    <span class="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-500">i</span>
+                </div>
+
+                <!-- Score Change Text -->
+                <div class="mb-3 text-xs sm:text-sm">
+                    <p class="text-gray-600">TA Score tăng điểm từ <span class="font-semibold text-gray-700">Tiềm năng</span> lên <span class="font-semibold text-green-600">Tích cực</span></p>
+                </div>
+
+                <!-- Column Chart History -->
+                <div class="flex items-end gap-2 h-16">
+                    <!-- Column 1 - Thận trọng -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full h-6 bg-yellow-400 rounded-sm"></div>
+                        <span class="text-xs text-gray-400">29/01</span>
+                    </div>
+                    <!-- Column 2 - Trung lập -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full h-8 bg-gray-400 rounded-sm"></div>
+                        <span class="text-xs text-gray-400">30/01</span>
+                    </div>
+                    <!-- Column 3 - Trung lập -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full h-8 bg-gray-400 rounded-sm"></div>
+                        <span class="text-xs text-gray-400">31/01</span>
+                    </div>
+                    <!-- Column 4 - Tiềm năng -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full h-10 bg-blue-400 rounded-sm"></div>
+                        <span class="text-xs text-gray-400">01/02</span>
+                    </div>
+                    <!-- Column 5 - Tích cực -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <div class="w-full h-12 bg-green-500 rounded-sm"></div>
+                        <span class="text-xs text-gray-700 font-semibold">02/02</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIK Stock Card -->
+            <div class="bg-gray-50 p-2 sm:p-3" id="tikstock-card">
+                <div class="flex items-center gap-1.5 mb-2">
+                    <h3 class="font-semibold text-gray-700 text-xs sm:text-sm">TIK Stock</h3>
+                    <span class="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-500">i</span>
+                </div>
+
+                <!-- Score Title -->
+                <div class="mb-2 text-xs sm:text-sm">
+                    <p class="text-gray-700">TIK Stock từ hạng <span class="font-semibold">A</span> tăng lên hạng <span class="font-semibold text-green-600">A+</span> - <span class="font-semibold text-orange-500">THẬP LÝ ĐÀO HOA</span> <span class="text-green-600 font-bold">(99/100đ)</span></p>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3 text-xs text-gray-500 leading-relaxed">
+                    Điểm tổng hợp ở vùng rất cao, mang tính chất tích cực mạnh mẽ và mức độ vượt trội rõ rệt, phản ánh sự kết hợp hài hòa giữa nền tảng cơ bản ổn định – không rủi ro nhưng thiếu đột phá – và sức mạnh kỹ thuật nổi bật với xu hướng tăng vững chắc, dòng tiền mạnh và niềm tin thị trường cao nhất trong nhóm.
+                </div>
+
+                <!-- Analysis Summary -->
+                <div class="space-y-1 text-xs sm:text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-500">Phân tích Consensus:</span>
+                        <span class="font-semibold text-gray-600">Trung lập</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-500">Phân tích kỹ thuật (TA):</span>
+                        <span class="font-semibold text-green-600">Tích cực</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stockData = {
+            'BID': { price: '54,100 VND', name: 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam', signals: ['Consensus'] },
+            'BSR': { price: '23,900 VND', name: 'Công ty Cổ phần Lọc Hóa dầu Bình Sơn', signals: ['Consensus'] },
+            'BVH': { price: '79,800 VND', name: 'Tập đoàn Bảo Việt', signals: ['Consensus'] },
+            'BWE': { price: '45,000 VND', name: 'Công ty Cổ phần Nước - Môi trường Bình Dương', signals: ['Consensus'] },
+            'CTG': { price: '39,700 VND', name: 'Ngân hàng Thương mại Cổ phần Công thương Việt Nam', signals: ['Consensus', 'eWealth TA', 'TIK Stock'] },
+            'CTR': { price: '100,800 VND', name: 'Tổng Công ty Cổ phần Công trình Viettel', signals: ['Consensus', 'eWealth TA', 'TIK Stock'] },
+            'REE': { price: '62,700 VND', name: 'Công ty Cổ phần Cơ Điện Lạnh', signals: ['Consensus', 'eWealth TA', 'TIK Stock'] },
+            'BCM': { price: '74,000 VND', name: 'Tổng Công ty Đầu tư và Phát triển Công nghiệp', signals: ['eWealth TA', 'TIK Stock'] },
+            'SAB': { price: '52,100 VND', name: 'Tổng Công ty Cổ phần Bia - Rượu - Nước giải khát Sài Gòn', signals: ['eWealth TA', 'TIK Stock'] }
+        };
+
+        function selectStock(code) {
+            document.querySelectorAll('.stock-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.stock === code);
+            });
+
+            const stock = stockData[code];
+            document.getElementById('stock-code').textContent = code;
+            document.getElementById('stock-price').textContent = stock.price;
+            document.getElementById('stock-name').textContent = stock.name;
+
+            document.getElementById('consensus-card').style.display = stock.signals.includes('Consensus') ? 'block' : 'none';
+            document.getElementById('ewealth-card').style.display = stock.signals.includes('eWealth TA') ? 'block' : 'none';
+            document.getElementById('tikstock-card').style.display = stock.signals.includes('TIK Stock') ? 'block' : 'none';
+        }
+
+        function toggleFilter(btn) {
+            btn.classList.toggle('active');
+            const icon = btn.querySelector('.check-icon');
+            if (btn.classList.contains('active')) {
+                btn.classList.remove('bg-gray-100', 'text-gray-500', 'border-gray-300');
+                btn.classList.add('bg-green-50', 'text-green-700', 'border-green-500');
+                icon.style.display = '';
+            } else {
+                btn.classList.remove('bg-green-50', 'text-green-700', 'border-green-500');
+                btn.classList.add('bg-gray-100', 'text-gray-500', 'border-gray-300');
+                icon.style.display = 'none';
+            }
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const showConsensus = document.getElementById('filter-consensus').classList.contains('active');
+            const showEwealth = document.getElementById('filter-ewealth').classList.contains('active');
+            const showTikstock = document.getElementById('filter-tikstock').classList.contains('active');
+
+            document.querySelectorAll('.stock-item').forEach(el => {
+                const code = el.dataset.stock;
+                const stock = stockData[code];
+                const hasMatchingSignal =
+                    (showConsensus && stock.signals.includes('Consensus')) ||
+                    (showEwealth && stock.signals.includes('eWealth TA')) ||
+                    (showTikstock && stock.signals.includes('TIK Stock'));
+                el.style.display = hasMatchingSignal ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

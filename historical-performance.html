@@ -139,6 +139,7 @@
                             <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[120px]">NAV (D)</th>
                             <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">1D %</th>
                             <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">MTD %</th>
+                            <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">YTD %</th>
                             <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">Dec-25</th>
                             <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">Nov-25</th>
                             <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-dark-700 min-w-[90px]">Oct-25</th>
@@ -193,6 +194,8 @@
                 returns1dAll: 1.18,
                 mtdMA: 2.45,
                 mtdAll: 2.31,
+                ytdMA: 2.45,
+                ytdAll: 2.31,
                 monthly: [3.21, 2.15, -1.45, 4.32, 1.89, 2.67],
                 portfolio: [
                     { code: 'FPT', weight: 25 },
@@ -213,6 +216,8 @@
                 returns1dAll: 0.92,
                 mtdMA: 1.89,
                 mtdAll: 1.95,
+                ytdMA: 1.89,
+                ytdAll: 1.95,
                 monthly: [2.45, 1.78, 0.56, 3.12, 2.34, 1.45],
                 portfolio: [
                     { code: 'VHM', weight: 22 },
@@ -233,6 +238,8 @@
                 returns1dAll: -0.38,
                 mtdMA: 0.78,
                 mtdAll: 0.85,
+                ytdMA: 0.78,
+                ytdAll: 0.85,
                 monthly: [1.89, 0.45, -2.34, 2.67, 0.98, 1.23],
                 portfolio: [
                     { code: 'VCB', weight: 28 },
@@ -252,6 +259,8 @@
                 returns1dAll: 0.61,
                 mtdMA: 1.34,
                 mtdAll: 1.42,
+                ytdMA: 1.34,
+                ytdAll: 1.42,
                 monthly: [2.12, 1.34, -0.78, 2.89, 1.56, 0.89],
                 portfolio: [
                     { code: 'FPT', weight: 30 },
@@ -271,6 +280,8 @@
                 returns1dAll: 1.54,
                 mtdMA: 3.12,
                 mtdAll: 2.98,
+                ytdMA: 3.12,
+                ytdAll: 2.98,
                 monthly: [4.56, 2.89, 1.23, 3.45, 2.12, 3.34],
                 portfolio: [
                     { code: 'HPG', weight: 35 },
@@ -283,10 +294,10 @@
         ];
 
         const benchmarks = [
-            { name: 'VN-Index', type: 'benchmark', color: '#64748B', nav: 1256.78, returns1d: 0.45, mtd: 1.12, monthly: [1.23, 0.89, -0.56, 1.78, 0.67, 0.95] },
-            { name: 'VN30', type: 'benchmark', color: '#94A3B8', nav: 1345.23, returns1d: 0.52, mtd: 1.28, monthly: [1.45, 0.98, -0.34, 1.89, 0.78, 1.02] },
-            { name: 'VNFinlead Index', type: 'benchmark', color: '#CBD5E1', nav: 1567.89, returns1d: 0.38, mtd: 0.95, monthly: [1.12, 0.76, -0.67, 1.56, 0.54, 0.87] },
-            { name: 'VNDiamond Index', type: 'benchmark', color: '#E2E8F0', nav: 1432.56, returns1d: 0.61, mtd: 1.45, monthly: [1.67, 1.12, -0.45, 2.01, 0.89, 1.15] }
+            { name: 'VN-Index', type: 'benchmark', color: '#64748B', nav: 1256.78, returns1d: 0.45, mtd: 1.12, ytd: 1.12, monthly: [1.23, 0.89, -0.56, 1.78, 0.67, 0.95] },
+            { name: 'VN30', type: 'benchmark', color: '#94A3B8', nav: 1345.23, returns1d: 0.52, mtd: 1.28, ytd: 1.28, monthly: [1.45, 0.98, -0.34, 1.89, 0.78, 1.02] },
+            { name: 'VNFinlead Index', type: 'benchmark', color: '#CBD5E1', nav: 1567.89, returns1d: 0.38, mtd: 0.95, ytd: 0.95, monthly: [1.12, 0.76, -0.67, 1.56, 0.54, 0.87] },
+            { name: 'VNDiamond Index', type: 'benchmark', color: '#E2E8F0', nav: 1432.56, returns1d: 0.61, mtd: 1.45, ytd: 1.45, monthly: [1.67, 1.12, -0.45, 2.01, 0.89, 1.15] }
         ];
 
         let viewMode = 'ma'; // 'ma' or 'all'
@@ -343,6 +354,7 @@
                 const nav = viewMode === 'ma' ? s.navMA : s.navAll;
                 const r1d = viewMode === 'ma' ? s.returns1dMA : s.returns1dAll;
                 const mtd = viewMode === 'ma' ? s.mtdMA : s.mtdAll;
+                const ytd = viewMode === 'ma' ? s.ytdMA : s.ytdAll;
 
                 html += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-dark-700/50 transition-colors cursor-pointer">
@@ -355,6 +367,7 @@
                         <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700 text-slate-700 dark:text-slate-200 font-mono">${formatNumber(nav)}</td>
                         <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(r1d)}</td>
                         <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(mtd)}</td>
+                        <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(ytd)}</td>
                         ${s.monthly.map(m => `<td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(m)}</td>`).join('')}
                         <td class="px-4 py-3 border-b border-slate-200 dark:border-dark-700">
                             <div class="flex flex-wrap gap-1">${renderPortfolio(s.portfolio)}</div>
@@ -364,7 +377,7 @@
             });
 
             // Separator
-            html += `<tr class="h-2 bg-slate-100 dark:bg-dark-900"><td colspan="11"></td></tr>`;
+            html += `<tr class="h-2 bg-slate-100 dark:bg-dark-900"><td colspan="12"></td></tr>`;
 
             // Benchmarks
             benchmarks.forEach(b => {
@@ -379,6 +392,7 @@
                         <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700 text-slate-600 dark:text-slate-300 font-mono">${formatNumber(b.nav)}</td>
                         <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(b.returns1d)}</td>
                         <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(b.mtd)}</td>
+                        <td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(b.ytd)}</td>
                         ${b.monthly.map(m => `<td class="px-4 py-3 text-right border-b border-slate-200 dark:border-dark-700">${formatReturn(m)}</td>`).join('')}
                         <td class="px-4 py-3 border-b border-slate-200 dark:border-dark-700 text-slate-400 dark:text-slate-500 italic">—</td>
                     </tr>
